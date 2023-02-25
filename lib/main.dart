@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'Services/ApiService.dart';
 
-void main() {
+late List<ChartData> _chartData;
+List<String>? listDateswithtime;
+late Map MapOfValues;
+late int length;
+
+void main() async {
+  listDateswithtime = await fetchSeriesDateDT();
+  MapOfValues = await fetchSeriesDateValues();
+  length = listDateswithtime!.length;
   runApp(const MyApp());
 }
 
@@ -19,12 +26,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-//API KEY = VTHIJHII6A4M4MSF
-String stringResponse = "initial";
-Map mapResponse = Map();
-Map mapResponse1 = Map();
-List listRespone = [];
-List listDateswithtime = [];
+
 late ZoomPanBehavior _zoomPanBehavior;
 
 class BottomSelectionWidget extends StatefulWidget {
@@ -35,28 +37,8 @@ class BottomSelectionWidget extends StatefulWidget {
 }
 
 class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
-  Future apicall() async {
-    http.Response response;
-    response = await http.get(
-        Uri.parse("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=1min&apikey=demo"));
-    if(response.statusCode == 200)
-      {
-        setState(() {
-          mapResponse = json.decode(response.body);
-          mapResponse1 = mapResponse["Time Series (1min)"];
-          listDateswithtime = mapResponse1.keys.toList();
-        });
-      }
-    else
-      {
-        setState(() {
-          listRespone = ['error'];
-        });
-      }
-  }
-  late List<ChartData> _chartData;
   @override
-  void initState() {
+  void initState(){
     _zoomPanBehavior = ZoomPanBehavior(
         enableMouseWheelZooming: true,
         enableDoubleTapZooming: true,
@@ -64,68 +46,140 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
         // Enables the selection zooming
         enableSelectionZooming: true
     );
-    apicall();
+    Future.delayed(Duration.zero,() async {
+      listDateswithtime = await fetchSeriesDateDT();
+      MapOfValues = await fetchSeriesDateValues();
+    });
+    length = listDateswithtime!.length;
     super.initState();
   }
+  @override
+  void ChangeVar({required String interv})async
+  {
+    listDateswithtime = await fetchSeriesDateDT(interval: interv);
+    MapOfValues = await fetchSeriesDateValues(interval: interv);
+    setState((){
+      length = listDateswithtime!.length;
+      getChartData();
+    });
+  }
+
   int i = 0;
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     _chartData = getChartData();
     return Scaffold(
-      appBar: AppBar(
-        title: Text(listDateswithtime[0].substring(0, 10)),
-      ) ,
-        body:
-        Column(
-          children: [
-            SfCartesianChart(
-              series: <CandleSeries>[
-                CandleSeries<ChartData, DateTime>
-                  (dataSource: _chartData,
-                    xValueMapper: (ChartData sales, _) => sales.x,
-                    lowValueMapper: (ChartData sales, _) => sales.low,
-                    highValueMapper: (ChartData sales, _) => sales.high,
-                    openValueMapper: (ChartData sales, _) => sales.open,
-                    closeValueMapper: (ChartData sales, _) => sales.close)
-              ],
-              primaryXAxis: DateTimeAxis(),
-              zoomPanBehavior: _zoomPanBehavior
-            ),
-          Row(
-          children: [Padding(padding: EdgeInsets.only(left: 10, top: 2),
-          child: Text('Time' + "               " + "Value", style: TextStyle(fontSize: 20, color: Colors.red)))]
+        appBar: AppBar(
+          title: Text(listDateswithtime![0].substring(0, 10)),
         ),
-          Expanded(child: Container(
-            padding: EdgeInsets.only(left: 2),
-          child: ListView.builder(padding: const EdgeInsets.only(top: 5),
-          itemCount: listDateswithtime.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Container(
-              height: 50,
-              child: Container(child: Text(listDateswithtime[index].substring(10, 13) + "                 " + mapResponse1[listDateswithtime[index]]["1. open"],
-                  style: TextStyle(fontSize: 15))),
-                );
-              }
-            )
-          )
-          )
-        ]
-       )
-    );
-  }
-  List<ChartData> getChartData()
-  {
-    return <ChartData>[
-      for(int i = 0; i < listDateswithtime.length; i++)
-          ChartData(x: DateTime(2023, 2, 24, int.parse(listDateswithtime[i].substring(10, 13)), int.parse(listDateswithtime[i].substring(14, 16))),
-            open: double.parse(mapResponse1[listDateswithtime[i]]["1. open"]),
-            close: double.parse(mapResponse1[listDateswithtime[i]]["4. close"]),
-            low: double.parse(mapResponse1[listDateswithtime[i]]["3. low"]),
-            high: double.parse(mapResponse1[listDateswithtime[i]]["2. high"]),
+        body: Column(children: [
+          SfCartesianChart(series: <CandleSeries>[
+            CandleSeries<ChartData, DateTime>(
+                dataSource: _chartData,
+                xValueMapper: (ChartData sales, _) => sales.x,
+                lowValueMapper: (ChartData sales, _) => sales.low,
+                highValueMapper: (ChartData sales, _) => sales.high,
+                openValueMapper: (ChartData sales, _) => sales.open,
+                closeValueMapper: (ChartData sales, _) => sales.close)
+          ], primaryXAxis: DateTimeAxis(),
+              zoomPanBehavior: _zoomPanBehavior,
+            tooltipBehavior: TooltipBehavior(enable: true),
           ),
-        //)
+          Row(children: [
+            Container(
+                height: 30,
+                margin:EdgeInsets.all(10),
+                child: FloatingActionButton(
+                  shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  onPressed: (){
+                      ChangeVar(interv: "1min");
+                  },
+                  child: Text("1min"),
+                )
+            ),
+            Container(
+                height: 30,
+                margin:EdgeInsets.all(10),
+                child: FloatingActionButton(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  onPressed: (){
+                      ChangeVar(interv: "5min");
+                  },
+                  child: Text("5min"),
+                )
+            ),Container(
+                height: 30,
+                margin:EdgeInsets.all(10),
+                child: FloatingActionButton(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  onPressed: (){
+                      ChangeVar(interv: "15min");
+                  },
+                  child: Text("15min"),
+                )
+            ),Container(
+                height: 30,
+                margin:EdgeInsets.all(10),
+                child: FloatingActionButton(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  onPressed: (){
+                      ChangeVar(interv: "30min");
+                  },
+                  child: Text("30min"),
+                )
+            ),Container(
+                height: 30,
+                margin:EdgeInsets.all(10),
+                child: FloatingActionButton(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  onPressed: (){
+                      ChangeVar(interv: "60min");
+                  },
+                  child: Text("60min"),
+                )
+            )]),
+            Padding(
+                padding: EdgeInsets.only(left: 10, top: 2),
+                child: Text('Time' + "               " + "Value",
+                    style: TextStyle(fontSize: 20, color: Colors.red))),
+          Expanded(
+              child: Container(
+                  padding: EdgeInsets.only(left: 2),
+                  child: ListView.builder(
+                      padding: const EdgeInsets.only(top: 5),
+                      itemCount: length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                          height: 50,
+                          child: Container(
+                              child: Text(
+                                  listDateswithtime![index] +
+                                      "                 " +
+                                      MapOfValues[listDateswithtime![index]]
+                                      ["1. open"],
+                                  style: TextStyle(fontSize: 15))),
+                        );
+                      }))),
+          //Floating Action button
+        ]),
+    );
+    }
+  List<ChartData> getChartData() {
+    return <ChartData>[
+      for (int i = 0; i < length; i++)
+        ChartData(
+          x: DateTime(
+              int.parse(listDateswithtime![i].substring(0,4)),
+              int.parse(listDateswithtime![i].substring(5,7)),
+              int.parse(listDateswithtime![i].substring(8,10)),
+              int.parse(listDateswithtime![i].substring(10, 13)),
+              int.parse(listDateswithtime![i].substring(14, 16))),
+          open: double.parse(MapOfValues[listDateswithtime![i]]["1. open"]),
+          close: double.parse(MapOfValues[listDateswithtime![i]]["4. close"]),
+          low: double.parse(MapOfValues[listDateswithtime![i]]["3. low"]),
+          high: double.parse(MapOfValues[listDateswithtime![i]]["2. high"]),
+        )
     ];
   }
 }
