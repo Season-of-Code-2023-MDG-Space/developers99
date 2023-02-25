@@ -25,6 +25,8 @@ Map mapResponse = Map();
 Map mapResponse1 = Map();
 List listRespone = [];
 List listDateswithtime = [];
+late ZoomPanBehavior _zoomPanBehavior;
+
 class BottomSelectionWidget extends StatefulWidget {
   const BottomSelectionWidget({super.key});
 
@@ -55,6 +57,13 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
   late List<ChartData> _chartData;
   @override
   void initState() {
+    _zoomPanBehavior = ZoomPanBehavior(
+        enableMouseWheelZooming: true,
+        enableDoubleTapZooming: true,
+        enablePinching: true,
+        // Enables the selection zooming
+        enableSelectionZooming: true
+    );
     apicall();
     super.initState();
   }
@@ -82,6 +91,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                     closeValueMapper: (ChartData sales, _) => sales.close)
               ],
               primaryXAxis: DateTimeAxis(),
+              zoomPanBehavior: _zoomPanBehavior
             ),
           Row(
           children: [Padding(padding: EdgeInsets.only(left: 10, top: 2),
