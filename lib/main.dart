@@ -55,16 +55,15 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
   late List<ChartData> _chartData;
   @override
   void initState() {
-    _chartData = getChartData();
     apicall();
     super.initState();
   }
-
   int i = 0;
 
   @override
   Widget build(BuildContext context)
   {
+    _chartData = getChartData();
     return Scaffold(
       appBar: AppBar(
         title: Text(listDateswithtime[0].substring(0, 10)),
@@ -95,7 +94,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
           itemBuilder: (BuildContext context, int index) {
             return Container(
               height: 50,
-              child: Container(child: Text(listDateswithtime[index].substring(10) + "                 " + mapResponse1[listDateswithtime[index]]["1. open"],
+              child: Container(child: Text(listDateswithtime[index].substring(10, 13) + "                 " + mapResponse1[listDateswithtime[index]]["1. open"],
                   style: TextStyle(fontSize: 15))),
                 );
               }
@@ -110,12 +109,13 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
   {
     return <ChartData>[
       for(int i = 0; i < listDateswithtime.length; i++)
-        ChartData(x: DateTime(2023, 2, 24, listDateswithtime[i].substring(10, 13), listDateswithtime[i].substring(14, 16)),
-        open: mapResponse1[listDateswithtime[i]]["1. open"],
-        close: mapResponse1[listDateswithtime[i]]["4. close"],
-        low: mapResponse1[listDateswithtime[i]]["3. low"],
-        high: mapResponse1[listDateswithtime[i]]["2. high"],
-        )
+          ChartData(x: DateTime(2023, 2, 24, int.parse(listDateswithtime[i].substring(10, 13)), int.parse(listDateswithtime[i].substring(14, 16))),
+            open: double.parse(mapResponse1[listDateswithtime[i]]["1. open"]),
+            close: double.parse(mapResponse1[listDateswithtime[i]]["4. close"]),
+            low: double.parse(mapResponse1[listDateswithtime[i]]["3. low"]),
+            high: double.parse(mapResponse1[listDateswithtime[i]]["2. high"]),
+          ),
+        //)
     ];
   }
 }
