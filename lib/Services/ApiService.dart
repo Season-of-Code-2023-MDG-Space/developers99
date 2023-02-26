@@ -38,21 +38,17 @@ Future<Map> fetchSeriesDateValues({String interval = "1min"}) async {
   }
 }
 
-Future<Map> Search({required String searchterm}) async {
+Future<List> Search({required String searchterm}) async {
   final response = await http.get(Uri.parse(
       "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=${searchterm}&apikey=${ApiKey}"));
   if (response.statusCode == 200) {
     final mapResponse = json.decode(response.body);
-    return (mapResponse["Time Series (${searchterm})"]);
-    //key is the date and time for which you want data
-    //All keys are presents in fetchOneMinuteSeriesDateDT()
-    //Access opening data using following methods
-    //_map = fetchOneMinuteSeriesDate()
-    //to get opening value use _map[key]["1. open"]
-    //_map[key]["2. high"] for high
-    //_map[key]["3. low"] for low
-    //_map[key]["4. close"] for closing
+    return (mapResponse["bestMatches"]);
   } else {
     throw HttpRequestException('Failed to load data');
   }
+//To access values use:
+//_list = Search("tes");
+//_list[0]["1. symbol"] for getting symbols
+//_list[0]["2. name"]
 }
