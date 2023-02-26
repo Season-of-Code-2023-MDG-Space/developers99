@@ -4,14 +4,13 @@ import 'Services/ApiService.dart';
 import 'search.dart';
 
 late List<ChartData> _chartData;
-List<String>? listDateswithtime;
-late Map MapOfValues;
+List<Stonks>? StockIntra;
 late int length;
 
 void main() async {
-  listDateswithtime = await fetchSeriesDateDT();
-  MapOfValues = await fetchSeriesDateValues();
-  length = listDateswithtime!.length;
+  StockIntra = await FetchSeries();
+  length = StockIntra!.length;
+  print(length);
   runApp(const MyApp());
 }
 
@@ -48,19 +47,17 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
         enableSelectionZooming: true
     );
     Future.delayed(Duration.zero,() async {
-      listDateswithtime = await fetchSeriesDateDT();
-      MapOfValues = await fetchSeriesDateValues();
+      StockIntra = await FetchSeries();
     });
-    length = listDateswithtime!.length;
+    length = StockIntra!.length;
     super.initState();
   }
   @override
   void ChangeVar({required String interv})async
   {
-    listDateswithtime = await fetchSeriesDateDT(interval: interv);
-    MapOfValues = await fetchSeriesDateValues(interval: interv);
+    StockIntra = await FetchSeries(interval: interv);
     setState((){
-      length = listDateswithtime!.length;
+      length = StockIntra!.length;
       getChartData();
     });
   }
@@ -72,7 +69,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
     _chartData = getChartData();
     return Scaffold(
         appBar: AppBar(
-          title: Text(listDateswithtime![0].substring(0, 10)),
+          title: Text(StockIntra![0].Date_Time!.substring(0, 10)),
         ),
         body: Column(children: [
           SfCartesianChart(series: <CandleSeries>[
@@ -155,10 +152,9 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                           height: 50,
                           child: Container(
                               child: Text(
-                                  listDateswithtime![index] +
+                                  StockIntra![index].Date_Time!.substring(11,) +
                                       "                 " +
-                                      MapOfValues[listDateswithtime![index]]
-                                      ["1. open"],
+                                      StockIntra![index].open.toString(),
                                   style: TextStyle(fontSize: 15))),
                         );
                       }))),
@@ -175,15 +171,15 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
       for (int i = 0; i < length; i++)
         ChartData(
           x: DateTime(
-              int.parse(listDateswithtime![i].substring(0,4)),
-              int.parse(listDateswithtime![i].substring(5,7)),
-              int.parse(listDateswithtime![i].substring(8,10)),
-              int.parse(listDateswithtime![i].substring(10, 13)),
-              int.parse(listDateswithtime![i].substring(14, 16))),
-          open: double.parse(MapOfValues[listDateswithtime![i]]["1. open"]),
-          close: double.parse(MapOfValues[listDateswithtime![i]]["4. close"]),
-          low: double.parse(MapOfValues[listDateswithtime![i]]["3. low"]),
-          high: double.parse(MapOfValues[listDateswithtime![i]]["2. high"]),
+              int.parse(StockIntra![i].Date_Time!.substring(0,4)),
+              int.parse(StockIntra![i].Date_Time!.substring(5,7)),
+              int.parse(StockIntra![i].Date_Time!.substring(8,10)),
+              int.parse(StockIntra![i].Date_Time!.substring(10, 13)),
+              int.parse(StockIntra![i].Date_Time!.substring(14, 16))),
+          open: StockIntra![i].open,
+          close: StockIntra![i].close,
+          low: StockIntra![i].low,
+          high: StockIntra![i].high,
         )
     ];
   }
