@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'Services/ApiService.dart';
+import 'search.dart';
 
 late List<ChartData> _chartData;
 List<String>? listDateswithtime;
@@ -162,6 +163,10 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                         );
                       }))),
           //Floating Action button
+          FloatingActionButton(onPressed: (){Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SearchScreen())
+            );})
         ]),
     );
     }
