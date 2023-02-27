@@ -7,9 +7,9 @@ class HttpRequestException implements Exception {
   HttpRequestException(this.message);
 }
 
-Future<List<Stonks>> FetchSeries({String interval = "1min"}) async {
+Future<List<Stonks>> FetchSeries({String interval = "1min", required String name}) async {
   final response = await http.get(Uri.parse(
-      "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=${interval}&apikey=${ApiKey}"));
+      "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=$name&interval=$interval&apikey=$ApiKey"));
   if (response.statusCode == 200) {
     final mapResponse = json.decode(response.body);
     List <Stonks> Stocks = [];
@@ -26,14 +26,13 @@ Future<List<Stonks>> FetchSeries({String interval = "1min"}) async {
         }
       return (Stocks);
   } else {
-    print('Failed to load data');
     throw HttpRequestException('Failed to load data');
   }
 }
 
 Future<List<Stonks>> FetchSeriesDaily({required String searchterm}) async { //To get daily history for 100 days
   final response = await http.get(Uri.parse(
-      "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${searchterm}&apikey=${ApiKey}"));
+      "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=$searchterm&apikey=$ApiKey"));
   if (response.statusCode == 200) {
     final mapResponse = json.decode(response.body);
     List <Stonks> Stocks = [];
@@ -42,15 +41,14 @@ Future<List<Stonks>> FetchSeriesDaily({required String searchterm}) async { //To
     for(int i = 0; i < _temp.length; i++)
     {
       Stocks.add(Stonks(Date_Time:_temp[i],
-          open: double.parse(mapResponse["Time Series (Daily))"]["${_temp[i]}"]["1. open"]),
-          close: double.parse(mapResponse["Time Series (Daily))"]["${_temp[i]}"]["4. close"]),
+          open: double.parse(mapResponse["Time Series (Daily)"]["${_temp[i]}"]["1. open"]),
+          close: double.parse(mapResponse["Time Series (Daily)"]["${_temp[i]}"]["4. close"]),
           high: double.parse(mapResponse["Time Series (Daily)"]["${_temp[i]}"]["2. high"]),
           low: double.parse(mapResponse["Time Series (Daily)"]["${_temp[i]}"]["3. low"]),
           vol: double.parse(mapResponse["Time Series (Daily)"]["${_temp[i]}"]["6. volume"])));
     }
     return (Stocks);
   } else {
-    print('Failed to load data');
     throw HttpRequestException('Failed to load data');
   }
 }
@@ -62,19 +60,18 @@ Future<List<Stonks>> FetchSeriesWeekly({required String searchterm}) async { //T
     final mapResponse = json.decode(response.body);
     List <Stonks> Stocks = [];
     List <String> _temp = List<String>.of(
-        (mapResponse["TIME_SERIES_WEEKLY"] as Map<String, dynamic>).keys);
+        (mapResponse["Weekly Time Series"] as Map<String, dynamic>).keys);
     for(int i = 0; i < _temp.length; i++)
     {
       Stocks.add(Stonks(Date_Time:_temp[i],
-          open: double.parse(mapResponse["TIME_SERIES_WEEKLY"]["${_temp[i]}"]["1. open"]),
-          close: double.parse(mapResponse["TIME_SERIES_WEEKLY"]["${_temp[i]}"]["4. close"]),
-          high: double.parse(mapResponse["TIME_SERIES_WEEKLY"]["${_temp[i]}"]["2. high"]),
-          low: double.parse(mapResponse["TIME_SERIES_WEEKLY"]["${_temp[i]}"]["3. low"]),
-          vol: double.parse(mapResponse["TIME_SERIES_WEEKLY"]["${_temp[i]}"]["5. volume"])));
+          open: double.parse(mapResponse["Weekly Time Series"]["${_temp[i]}"]["1. open"]),
+          close: double.parse(mapResponse["Weekly Time Series"]["${_temp[i]}"]["4. close"]),
+          high: double.parse(mapResponse["Weekly Time Series"]["${_temp[i]}"]["2. high"]),
+          low: double.parse(mapResponse["Weekly Time Series"]["${_temp[i]}"]["3. low"]),
+          vol: double.parse(mapResponse["Weekly Time Series"]["${_temp[i]}"]["5. volume"])));
     }
     return (Stocks);
   } else {
-    print('Failed to load data');
     throw HttpRequestException('Failed to load data');
   }
 }
@@ -86,19 +83,18 @@ Future<List<Stonks>> FetchSeriesMonthly({required String searchterm}) async { //
     final mapResponse = json.decode(response.body);
     List <Stonks> Stocks = [];
     List <String> _temp = List<String>.of(
-        (mapResponse["TIME_SERIES_MONTHLY"] as Map<String, dynamic>).keys);
+        (mapResponse["Monthly Time Series"] as Map<String, dynamic>).keys);
     for(int i = 0; i < _temp.length; i++)
     {
       Stocks.add(Stonks(Date_Time:_temp[i],
-          open: double.parse(mapResponse["TIME_SERIES_MONTHLY"]["${_temp[i]}"]["1. open"]),
-          close: double.parse(mapResponse["TIME_SERIES_MONTHLY"]["${_temp[i]}"]["4. close"]),
-          high: double.parse(mapResponse["TIME_SERIES_MONTHLY"]["${_temp[i]}"]["2. high"]),
-          low: double.parse(mapResponse["TIME_SERIES_MONTHLY"]["${_temp[i]}"]["3. low"]),
-          vol: double.parse(mapResponse["TIME_SERIES_MONTHLY"]["${_temp[i]}"]["5. volume"])));
+          open: double.parse(mapResponse["Monthly Time Series"]["${_temp[i]}"]["1. open"]),
+          close: double.parse(mapResponse["Monthly Time Series"]["${_temp[i]}"]["4. close"]),
+          high: double.parse(mapResponse["Monthly Time Series"]["${_temp[i]}"]["2. high"]),
+          low: double.parse(mapResponse["Monthly Time Series"]["${_temp[i]}"]["3. low"]),
+          vol: double.parse(mapResponse["Monthly Time Series"]["${_temp[i]}"]["5. volume"])));
     }
     return (Stocks);
   } else {
-    print('Failed to load data');
     throw HttpRequestException('Failed to load data');
   }
 }
