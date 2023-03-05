@@ -7,10 +7,15 @@ import 'Services/LocalStorage.dart';
 late List<ChartData> _chartData;
 List<Stonks>? StockIntra;
 late int length;
+String _StockName = "HINDALCO.NS";
+
+void SetStockName(String stockname){
+  _StockName = stockname;
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-   StockIntra = await FetchSeries(name:"IBM");
+   StockIntra = await FetchSeries(name:_StockName);
    length = StockIntra!.length;
    await UserSharedPreferences.init();
    runApp(const MyApp());
@@ -30,6 +35,7 @@ class MyApp extends StatelessWidget {
 }
 
 late ZoomPanBehavior _zoomPanBehavior;
+late ZoomMode _zoomModeType;
 
 class BottomSelectionWidget extends StatefulWidget {
   const BottomSelectionWidget({super.key});
@@ -41,7 +47,9 @@ class BottomSelectionWidget extends StatefulWidget {
 class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
   @override
   void initState(){
+    _zoomModeType = ZoomMode.x;
     _zoomPanBehavior = ZoomPanBehavior(
+        zoomMode: _zoomModeType,
         enableMouseWheelZooming: true,
         enableDoubleTapZooming: true,
         enablePinching: true,
@@ -49,7 +57,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
         enableSelectionZooming: true
     );
     Future.delayed(Duration.zero,() async {
-      StockIntra = await FetchSeries(name:"IBM");
+      StockIntra = await FetchSeries(name:_StockName);
     });
     length = StockIntra!.length;
     _chartData = getChartData();
@@ -58,45 +66,48 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
   @override
   void ChangeVar({required String interv})async
   {
-    StockIntra = await FetchSeries(name:"IBM" , interval: interv);
     setState((){
+      Future.delayed(Duration.zero,() async {
+        StockIntra = await FetchSeries(name:_StockName , interval: interv);
+      });
       length = StockIntra!.length;
       getChartData();
       _chartData = getChartData();
     });
   }
 
-  @override
-  void ChangeVar1({required String symb})async
-  {
-    StockIntra = await FetchSeriesDaily(searchterm: symb);
-    setState((){
-      length = StockIntra!.length;
-      getChartData1();
-      _chartData = getChartData1();
-    });
-  }
-
-  @override
-  void ChangeVar2({required String symb})async
-  {
-    StockIntra = await FetchSeriesWeekly(searchterm: symb);
-    setState((){
-      length = StockIntra!.length;
-      getChartData1();
-      _chartData = getChartData1();
-    });
-  }
+  // @override
+  // void ChangeVar1({required String symb})async
+  // {
+  //   StockIntra = await FetchSeriesDaily(searchterm: symb);
+  //   setState((){
+  //     length = StockIntra!.length;
+  //     getChartData1();
+  //     _chartData = getChartData1();
+  //   });
+  // }
+  //
+  // @override
+  // void ChangeVar2({required String symb})async
+  // {
+  //   StockIntra = await FetchSeriesWeekly(searchterm: symb);
+  //   setState((){
+  //     length = StockIntra!.length;
+  //     getChartData1();
+  //     _chartData = getChartData1();
+  //   });
+  // }
 
   int i = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(StockIntra![0].Date_Time!.substring(0, 10)),
+          title: Text('$_StockName'),
         ),
-        body: Column(children: [
-          SfCartesianChart(series: <CandleSeries>[
+        body: Column(children :[Container(
+          height: 400,
+          child:SfCartesianChart(series: <CandleSeries>[
             CandleSeries<ChartData, DateTime>(
                 dataSource: _chartData,
                 xValueMapper: (ChartData sales, _) => sales.x,
@@ -106,7 +117,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                 closeValueMapper: (ChartData sales, _) => sales.close)
           ], primaryXAxis: DateTimeAxis(),
               zoomPanBehavior: _zoomPanBehavior,
-            tooltipBehavior: TooltipBehavior(enable: true),
+            tooltipBehavior: TooltipBehavior(enable: true)),
           ),
           Row(children: [
             Container(
@@ -115,7 +126,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                 child: FloatingActionButton(
                   shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   onPressed: (){
-                      ChangeVar(interv: "1min");
+                      ChangeVar(interv: "1m");
                   },
                   child: Text("1min"),
                 )
@@ -126,7 +137,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                 child: FloatingActionButton(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   onPressed: (){
-                      ChangeVar(interv: "5min");
+                      ChangeVar(interv: "5m");
                   },
                   child: Text("5min"),
                 )
@@ -136,7 +147,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                 child: FloatingActionButton(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   onPressed: (){
-                      ChangeVar(interv: "15min");
+                      ChangeVar(interv: "15m");
                   },
                   child: Text("15min"),
                 )
@@ -146,7 +157,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                 child: FloatingActionButton(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   onPressed: (){
-                      ChangeVar(interv: "30min");
+                      ChangeVar(interv: "30m");
                   },
                   child: Text("30min"),
                 )
@@ -156,73 +167,82 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                 child: FloatingActionButton(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   onPressed: (){
-                      ChangeVar(interv: "60min");
+                      ChangeVar(interv: "60m");
                   },
                   child: Text("60min"),
                 )
             )]),
-            Row(children: [
-            Container(
-              height: 30,
-              margin:EdgeInsets.all(10),
-              child: FloatingActionButton(
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                onPressed: (){
-                    ChangeVar1(symb: "IBM");
-                },
-                child: Text("Daily"),
-            )),
+            Row(children: [Container(
+                height: 30,
+                margin:EdgeInsets.all(10),
+                child: FloatingActionButton(
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  onPressed: (){
+                    ChangeVar(interv: "1d");
+                  },
+                  child: Text("1 Day"),
+                )
+            ),
               Container(
                   height: 30,
                   margin:EdgeInsets.all(10),
                   child: FloatingActionButton(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     onPressed: (){
-                      ChangeVar2(symb: "IBM");
+                      ChangeVar(interv: "1wk");
                     },
-                    child: Text("Weekly"),
-                  ))
-            ]),
-            Padding(
-                padding: EdgeInsets.only(left: 10, top: 2),
-                child: Text('Date+Time' + "               " + "Value",
-                    style: TextStyle(fontSize: 20, color: Colors.red))),
-          Expanded(
-              child: Container(
-                  padding: EdgeInsets.only(left: 120),
-                  child: ListView.builder(
-                      padding: const EdgeInsets.only(top: 5),
-                      itemCount: length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                          height: 50,
-                          child: Container(
-                              child: Text(
-                                  StockIntra![index].Date_Time! +
-                                      "                 " +
-                                      StockIntra![index].open.toString(),
-                                  style: TextStyle(fontSize: 15))),
-                        );
-                      }))),
+                    child: Text("1 week"),
+                  )
+              ),
+              Container(
+                  height: 30,
+                  margin:EdgeInsets.all(10),
+                  child: FloatingActionButton(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    onPressed: (){
+                      ChangeVar(interv: "1mo");
+                    },
+                    child: Text("1month"),
+                  )
+              ),
+              ],),
+            // Padding(
+            //     padding: EdgeInsets.only(left: 10, top: 2),
+            //     child: Text('Date+Time' + "               " + "Value",
+            //         style: TextStyle(fontSize: 20, color: Colors.red))),
+          // Expanded(
+          //     child: Container(
+          //         padding: EdgeInsets.only(left: 120),
+          //         child: ListView.builder(
+          //             padding: const EdgeInsets.only(top: 5),
+          //             itemCount: length,
+          //             itemBuilder: (BuildContext context, int index) {
+          //               return Container(
+          //                 height: 50,
+          //                 child: Container(
+          //                     child: Text(
+          //                         StockIntra![index].Date_Time!.toString() +
+          //                             "        " +
+          //                             StockIntra![index].open.toString(),
+          //                         style: TextStyle(fontSize: 15))),
+          //               );
+          //             }))),
           //Floating Action button
-          FloatingActionButton(child:Icon(Icons.search),
+          Row(children: [FloatingActionButton(child:Icon(Icons.search),
               onPressed: (){Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => SearchScreen(),)
-            );})
-        ]),
-    );
+            );}),
+          FloatingActionButton(child:Icon(Icons.minimize),
+          onPressed:() {_zoomPanBehavior.reset();}
+          )]),
+        ]));
     }
   List<ChartData> getChartData() {
     return <ChartData>[
       for (int i = 0; i < length; i++)
         ChartData(
-          x: DateTime(
-              int.parse(StockIntra![i].Date_Time!.substring(0,4)),
-              int.parse(StockIntra![i].Date_Time!.substring(5,7)),
-              int.parse(StockIntra![i].Date_Time!.substring(8,10)),
-              int.parse(StockIntra![i].Date_Time!.substring(10, 13)),
-              int.parse(StockIntra![i].Date_Time!.substring(14, 16))),
+          x: StockIntra![i].Date_Time,
           open: StockIntra![i].open,
           close: StockIntra![i].close,
           low: StockIntra![i].low,
@@ -234,10 +254,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
     return <ChartData>[
       for (int i = 0; i < length; i++)
         ChartData(
-          x: DateTime(
-              int.parse(StockIntra![i].Date_Time!.substring(0,4)),
-              int.parse(StockIntra![i].Date_Time!.substring(5,7)),
-              int.parse(StockIntra![i].Date_Time!.substring(8,10))),
+          x: StockIntra![i].Date_Time,
           open: StockIntra![i].open,
           close: StockIntra![i].close,
           low: StockIntra![i].low,

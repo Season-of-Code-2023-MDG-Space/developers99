@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'Services/ApiService.dart';
 import 'dart:async';
+import 'main.dart';
 
 Timer? timer;
 
@@ -67,22 +68,18 @@ class _SearchBarScreen extends State<SearchBarScreen> {
                 padding: const EdgeInsets.only(top: 5),
                 itemCount: length,
                 itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    height: 50,
-                    child: Container(
-                      child: Row(children: [
-                        Text(
-                            lisres[index].Name.toString(),
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 15,)),
-                        Text(
-                            lisres[index].Symbol.toString(),
-                            textAlign: TextAlign.right,
-                            style: TextStyle(fontSize: 15,))
-                      ]),
-                    ),
-                  );
-                })))
+                  return ListTile(
+                    onTap:() {SetStockName(lisres[index].Symbol.toString());
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyApp()));},
+                    title: Text(
+                      lisres[index].Name.toString() +
+                          "           " + lisres[index].Symbol.toString(),
+                      textAlign: TextAlign.left,
+                      style: TextStyle(fontSize: 15,),));
+                })
+                  ))
               else
                 (
                   Icon(Icons.circle_outlined)
