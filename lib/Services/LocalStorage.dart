@@ -11,12 +11,17 @@ class UserSharedPreferences{
   static const String _PriceList = "";
   static const String _StockVolList = "";
 
+  static const String _Price = "";
+
   static Future init() async{
     _preferences = await SharedPreferences.getInstance();
   }
 
   static Future setUserName(String username) async => _preferences!.setString(_UserName, username);
   static getUserName() => _preferences!.get(_UserName);
+
+  static Future setPrice(double price) async => _preferences!.setDouble(_Price, price);
+  static getPrice() => _preferences!.get(_Price);
 
   static Future setPassword(String password) async => _preferences!.setString(_UserName, password);
   static getPassword() => _preferences!.get(_Password);
