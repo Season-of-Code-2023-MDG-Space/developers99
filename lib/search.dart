@@ -52,15 +52,11 @@ class _SearchBarScreen extends State<SearchBarScreen> {
                   padding: EdgeInsets.only(top: 20),
                   child: TextField(controller: mycontroller,
                     onChanged: (text) {
-                    if(text != '' && text != ' ')
-                      {setState(() {
-                        Future.delayed(Duration(milliseconds: 2000), () async {
-                          if(text != ''){
+                    if(text != '' && text != ' '){
                             _onChangeHandler();
-                            length = lisres.length;}
-                        });
-                      });}
-                    },
+                            length = lisres.length;
+                        }
+                      },
                     decoration: InputDecoration(border: OutlineInputBorder(),
                         hintText: "Enter the name..."),)
               ),
