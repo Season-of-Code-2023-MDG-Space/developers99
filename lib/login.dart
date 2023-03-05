@@ -69,8 +69,8 @@ class _MyLoginState extends State<MyLogin> {
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text(
+                      children: [
+                        const Text(
                           'Sign In',
                           style: TextStyle(
                             color: Colors.white70,
@@ -82,8 +82,10 @@ class _MyLoginState extends State<MyLogin> {
                           radius: 30.0,
                           backgroundColor: Colors.white70,
                           child: IconButton(
-                            onPressed: null,
-                            icon: Icon(Icons.arrow_forward),
+                            onPressed: () {
+                              Navigator.pushNamed(context,'home');
+                            },
+                            icon: const Icon(Icons.arrow_forward),
                           ),
                         ),
                       ],

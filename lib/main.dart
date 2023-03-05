@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trading_app/home.dart';
 import 'package:trading_app/register.dart';
 import 'login.dart';
 
@@ -8,6 +9,7 @@ void main() => runApp(MaterialApp(
   routes: {
     'login' : (context)=>const MyLogin(),
     'register' : (context)=>const MyRegister(),
+    'home' : (context)=>const HomePage(),
   },
 ));
 
