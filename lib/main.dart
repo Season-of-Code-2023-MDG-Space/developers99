@@ -3,11 +3,16 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'Services/ApiService.dart';
 import 'search.dart';
 import 'Services/LocalStorage.dart';
+import 'dart:async';
+
+Timer? timer;
 
 late List<ChartData> _chartData;
 List<Stonks>? StockIntra;
 late int length;
 String _StockName = "HINDALCO.NS";
+int nsel = 1;
+String _interval = "1m";
 
 void SetStockName(String stockname){
   _StockName = stockname;
@@ -61,6 +66,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
     });
     length = StockIntra!.length;
     _chartData = getChartData();
+    timer = Timer.periodic(Duration(seconds: 10), (Timer t) => ChangeVar(interv: _interval));
     super.initState();
   }
   @override
@@ -127,6 +133,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                   shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   onPressed: (){
                       ChangeVar(interv: "1m");
+                      _interval = "1m";
                   },
                   child: Text("1min"),
                 )
@@ -138,6 +145,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   onPressed: (){
                       ChangeVar(interv: "5m");
+                      _interval = "5m";
                   },
                   child: Text("5min"),
                 )
@@ -148,6 +156,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   onPressed: (){
                       ChangeVar(interv: "15m");
+                      _interval = "15m";
                   },
                   child: Text("15min"),
                 )
@@ -158,6 +167,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   onPressed: (){
                       ChangeVar(interv: "30m");
+                      _interval = "30m";
                   },
                   child: Text("30min"),
                 )
@@ -168,6 +178,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   onPressed: (){
                       ChangeVar(interv: "60m");
+                      _interval = "60m";
                   },
                   child: Text("60min"),
                 )
@@ -179,6 +190,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   onPressed: (){
                     ChangeVar(interv: "1d");
+                    _interval = "1d";
                   },
                   child: Text("1 Day"),
                 )
@@ -190,6 +202,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     onPressed: (){
                       ChangeVar(interv: "1wk");
+                      _interval = "1wk";
                     },
                     child: Text("1 week"),
                   )
@@ -201,6 +214,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     onPressed: (){
                       ChangeVar(interv: "1mo");
+                      _interval = "1mo";
                     },
                     child: Text("1month"),
                   )
