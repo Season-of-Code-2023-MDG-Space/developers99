@@ -69,7 +69,7 @@ class _SearchBarScreen extends State<SearchBarScreen> {
                 itemCount: length,
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
-                    onTap:() {SetStockName(lisres[index].Symbol.toString());
+                    onTap:() {SetStockName(lisres[index].Symbol.toString(),lisres[index].Name.toString());
                     Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => MyApp()));},
