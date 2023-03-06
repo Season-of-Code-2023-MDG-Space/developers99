@@ -11,7 +11,7 @@ import 'dart:math';
 
 Future<List<Stonks>> FetchSeries({String interval = "1m", required String name}) async {
   final response = await http.get(Uri.parse(
-      "https://query1.finance.yahoo.com/v8/finance/chart/$name?interval=$interval&includePrePost=true&period2=${(DateTime.now().microsecondsSinceEpoch ~/ pow(10, 6)) + 60}&useYfid=true"));
+      "https://query1.finance.yahoo.com/v8/finance/chart/$name?interval=$interval&includePrePost=true&period2=${(DateTime.now().microsecondsSinceEpoch ~/ pow(10, 6)) + 6000}&useYfid=true"));
     final mapResponse = json.decode(response.body);
     List <Stonks> Stocks = [];
     List <dynamic> _temp = mapResponse["chart"]["result"][0]["timestamp"];
@@ -25,6 +25,17 @@ Future<List<Stonks>> FetchSeries({String interval = "1m", required String name})
               vol: mapResponse["chart"]["result"][0]["indicators"]["quote"][0]["volume"][i]));
         }
       return (Stocks);
+}
+
+Future<CurrentStat> Currentstatus({required String name}) async {
+  final response = await http.get(Uri.parse(
+      "https://query1.finance.yahoo.com/v7/finance/quote?formatted=true&symbols=$name"));
+  final mapResponse = json.decode(response.body);
+  CurrentStat temp = new CurrentStat();
+  temp.RegMarketPrice = mapResponse["quoteResponse"]["result"][0]["regularMarketPrice"]["raw"];
+  temp.ChangeAmt = mapResponse["quoteResponse"]["result"][0]["regularMarketChange"]["raw"];
+  temp.ChangePer = mapResponse["quoteResponse"]["result"][0]["regularMarketChangePercent"]["raw"];
+  return (temp);
 }
 
 // Future<List<Stonks>> FetchSeriesDaily({required String searchterm}) async { //To get daily history for 100 days
@@ -132,4 +143,11 @@ class Result{
   Result({this.Symbol, this.Name});
   String? Symbol;
   String? Name;
+}
+
+class CurrentStat{
+  CurrentStat({this.RegMarketPrice, this.ChangePer, this.ChangeAmt});
+  double? RegMarketPrice;
+  double? ChangePer;
+  double? ChangeAmt;
 }

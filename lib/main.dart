@@ -11,11 +11,18 @@ late List<ChartData> _chartData;
 List<Stonks>? StockIntra;
 late int length;
 String _StockName = "HINDALCO.NS";
+String _StockLongName = "Hindalco Industries Ltd";
 int nsel = 1;
 String _interval = "1m";
 
-void SetStockName(String stockname){
+Color passivebgbuttoncolour = const Color(0xff303030);
+Color activebgbuttoncolor = Colors.white;
+Color activetxtcolor = Colors.black;
+Color passivetxtcolor = Colors.white60;
+
+void SetStockName(String stockname, String stocklongname){
   _StockName = stockname;
+  _StockLongName = stocklongname;
 }
 
 void main() async {
@@ -50,6 +57,7 @@ class BottomSelectionWidget extends StatefulWidget {
 }
 
 class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
+  CurrentStat CurrentPriceStatus = new CurrentStat();
   @override
   void initState(){
     _zoomModeType = ZoomMode.x;
@@ -63,18 +71,20 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
     );
     Future.delayed(Duration.zero,() async {
       StockIntra = await FetchSeries(name:_StockName);
+      CurrentPriceStatus = await Currentstatus(name: _StockName);
     });
     length = StockIntra!.length;
     _chartData = getChartData();
-    timer = Timer.periodic(Duration(seconds: 10), (Timer t) => ChangeVar(interv: _interval));
+    timer = Timer.periodic(Duration(seconds:2), (Timer t) => ChangeVar(interv: _interval));
     super.initState();
   }
   @override
   void ChangeVar({required String interv})async
   {
     setState((){
-      Future.delayed(Duration.zero,() async {
+      Future.delayed(Duration(milliseconds: 200),() async {
         StockIntra = await FetchSeries(name:_StockName , interval: interv);
+        CurrentPriceStatus = await Currentstatus(name: _StockName);
       });
       length = StockIntra!.length;
       getChartData();
@@ -107,119 +117,164 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
   int i = 0;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('$_StockName'),
+    return Scaffold(backgroundColor: Color(0xff101010),
+        appBar: AppBar(backgroundColor: Colors.black,
+          title: Row(children: [
+            Container(
+              height: 50,
+              width: 50,
+              child: FloatingActionButton(child:Icon(Icons.search),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  backgroundColor: Colors.amberAccent,
+                  onPressed: (){Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SearchScreen(),)
+                  );})),
+
+          Column(children:<Widget>[Container(child:
+            Text('$_StockName',style:TextStyle(fontSize: 25, fontFamily: 'ConcertOne',),),
+          padding: EdgeInsets.only(left: 80),),
+
+          Container(padding: EdgeInsets.only(top: 10, left: 80),
+              child:Text('$_StockLongName', style: TextStyle(fontSize: 15,fontWeight: FontWeight.w400, color: Colors.white54)))])]),
+          centerTitle: true,
         ),
-        body: Column(children :[Container(
-          height: 400,
-          child:SfCartesianChart(series: <CandleSeries>[
-            CandleSeries<ChartData, DateTime>(
-                dataSource: _chartData,
-                xValueMapper: (ChartData sales, _) => sales.x,
-                lowValueMapper: (ChartData sales, _) => sales.low,
-                highValueMapper: (ChartData sales, _) => sales.high,
-                openValueMapper: (ChartData sales, _) => sales.open,
-                closeValueMapper: (ChartData sales, _) => sales.close)
-          ], primaryXAxis: DateTimeAxis(),
-              zoomPanBehavior: _zoomPanBehavior,
-            tooltipBehavior: TooltipBehavior(enable: true)),
-          ),
-          Row(children: [
+        body:
+        Column(
+            children :[
+              Column(children: [
+                Text("${CurrentPriceStatus.RegMarketPrice}", style: TextStyle(color: Colors.white, fontSize: 40),),
+                Row(children: [Container(padding: EdgeInsets.only(left: 130),
+                    child:Text("${CurrentPriceStatus.ChangeAmt}",
+                      style: TextStyle(fontSize: 17, color: (CurrentPriceStatus.ChangeAmt! > 0)? Colors.green : Colors.red),)),
+                  Text("  (${CurrentPriceStatus.ChangePer}%)", style: TextStyle(fontSize: 17,color: (CurrentPriceStatus.ChangePer! > 0)? Colors.green : Colors.red),)
+          ],),]),
+          Row(
+              children: [
             Container(
                 height: 30,
-                margin:EdgeInsets.all(10),
-                child: FloatingActionButton(
-                  shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                width: 40,
+                decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.white54))),
+                margin:EdgeInsets.all(1),
+                child: FloatingActionButton(backgroundColor: bgbuttoncolor("1m"),
+                  shape: RoundedRectangleBorder(),
                   onPressed: (){
                       ChangeVar(interv: "1m");
                       _interval = "1m";
                   },
-                  child: Text("1min"),
+                  child: Text("1min", style: TextStyle(color: txtbuttoncolor("1m")),
                 )
-            ),
+            )),
             Container(
                 height: 30,
-                margin:EdgeInsets.all(10),
-                child: FloatingActionButton(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                width: 40,
+                margin:EdgeInsets.all(1),
+                decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.white54))),
+                child: FloatingActionButton(backgroundColor: bgbuttoncolor("5m"),
+                  shape: RoundedRectangleBorder(),
                   onPressed: (){
                       ChangeVar(interv: "5m");
                       _interval = "5m";
                   },
-                  child: Text("5min"),
+                  child: Text("5min", style: TextStyle(color: txtbuttoncolor("5m")),),
                 )
             ),Container(
                 height: 30,
-                margin:EdgeInsets.all(10),
-                child: FloatingActionButton(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                width: 50,
+                margin:EdgeInsets.all(1),
+                decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.white54))),
+                child: FloatingActionButton(backgroundColor: bgbuttoncolor("15m"),
+                  shape: RoundedRectangleBorder(),
                   onPressed: (){
                       ChangeVar(interv: "15m");
                       _interval = "15m";
                   },
-                  child: Text("15min"),
+                  child: Text("15min", style: TextStyle(color: txtbuttoncolor("15m")),),
                 )
             ),Container(
                 height: 30,
-                margin:EdgeInsets.all(10),
-                child: FloatingActionButton(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                width: 50,
+                margin:EdgeInsets.all(1),
+                decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.white54))),
+                child: FloatingActionButton(backgroundColor: bgbuttoncolor("30m"),
+                  shape: RoundedRectangleBorder(),
                   onPressed: (){
                       ChangeVar(interv: "30m");
                       _interval = "30m";
                   },
-                  child: Text("30min"),
+                  child: Text("30min", style: TextStyle(color: txtbuttoncolor("30m")),),
                 )
             ),Container(
                 height: 30,
-                margin:EdgeInsets.all(10),
-                child: FloatingActionButton(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                width: 50,
+                margin:EdgeInsets.all(1),
+                decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.white54))),
+                child: FloatingActionButton(backgroundColor: bgbuttoncolor("60m"),
+                  shape: RoundedRectangleBorder(),
                   onPressed: (){
                       ChangeVar(interv: "60m");
                       _interval = "60m";
                   },
-                  child: Text("60min"),
+                  child: Text("60min", style: TextStyle(color: txtbuttoncolor("60m")),),
                 )
-            )]),
-            Row(children: [Container(
+            ),
+                Container(
                 height: 30,
-                margin:EdgeInsets.all(10),
-                child: FloatingActionButton(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                width: 50,
+                margin:EdgeInsets.all(1),
+                decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.white54))),
+                child: FloatingActionButton(backgroundColor: bgbuttoncolor("1d"),
+                  shape: RoundedRectangleBorder(),
                   onPressed: (){
                     ChangeVar(interv: "1d");
                     _interval = "1d";
                   },
-                  child: Text("1 Day"),
+                  child: Text("1 Day", style: TextStyle(color: txtbuttoncolor("1d")),),
                 )
             ),
               Container(
                   height: 30,
-                  margin:EdgeInsets.all(10),
-                  child: FloatingActionButton(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  width: 50,
+                  margin:EdgeInsets.all(1),
+                  decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.white54))),
+                  child: FloatingActionButton(backgroundColor: bgbuttoncolor("1wk"),
+                    shape: RoundedRectangleBorder(),
                     onPressed: (){
                       ChangeVar(interv: "1wk");
                       _interval = "1wk";
                     },
-                    child: Text("1 week"),
+                    child: Text("1week", style: TextStyle(color: txtbuttoncolor("1wk")),),
                   )
               ),
               Container(
                   height: 30,
-                  margin:EdgeInsets.all(10),
-                  child: FloatingActionButton(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  width: 60,
+                  margin:EdgeInsets.all(1),
+                  child: FloatingActionButton(backgroundColor: bgbuttoncolor("1mo"),
+                    shape: RoundedRectangleBorder(),
                     onPressed: (){
                       ChangeVar(interv: "1mo");
                       _interval = "1mo";
                     },
-                    child: Text("1month"),
+                    child: Text("1month", style: TextStyle(color: txtbuttoncolor("1mo")),),
                   )
+              ),]),
+              Container( color: Color(0xff101010),
+                height: 400,
+                child:SfCartesianChart(series: <CandleSeries>[
+                  CandleSeries<ChartData, DateTime>(
+                      bearColor: Colors.red.shade500,
+                      bullColor: Colors.green.shade600,
+                      dataSource: _chartData,
+                      xValueMapper: (ChartData sales, _) => sales.x,
+                      lowValueMapper: (ChartData sales, _) => sales.low,
+                      highValueMapper: (ChartData sales, _) => sales.high,
+                      openValueMapper: (ChartData sales, _) => sales.open,
+                      closeValueMapper: (ChartData sales, _) => sales.close)
+                ], primaryXAxis: DateTimeAxis(),
+                    zoomPanBehavior: _zoomPanBehavior,
+                    tooltipBehavior: TooltipBehavior(enable: true)),
               ),
-              ],),
             // Padding(
             //     padding: EdgeInsets.only(left: 10, top: 2),
             //     child: Text('Date+Time' + "               " + "Value",
@@ -242,14 +297,31 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
           //               );
           //             }))),
           //Floating Action button
-          Row(children: [FloatingActionButton(child:Icon(Icons.search),
-              onPressed: (){Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => SearchScreen(),)
-            );}),
-          FloatingActionButton(child:Icon(Icons.minimize),
-          onPressed:() {_zoomPanBehavior.reset();}
-          )]),
+          Row(children: [Container(
+              height: 40,
+              padding: EdgeInsets.only(left: 120),
+              child:
+            FloatingActionButton(child:Icon(Icons.zoom_in_map_sharp),
+                backgroundColor: Colors.black,
+                onPressed:() {_zoomPanBehavior.reset();}
+            )),
+            Container(
+              height: 40,
+                padding: EdgeInsets.only(left: 10),
+                child:
+            FloatingActionButton(child:Icon(Icons.zoom_in),
+                backgroundColor: Colors.black,
+                onPressed:() {_zoomPanBehavior.zoomIn();}
+            )),
+            Container(
+              height: 40,
+                padding: EdgeInsets.only(left: 10),
+                child:
+            FloatingActionButton(child:Icon(Icons.zoom_out),
+                backgroundColor: Colors.black,
+                onPressed:() {_zoomPanBehavior.zoomOut();}
+            )),
+            ]),
         ]));
     }
   List<ChartData> getChartData() {
@@ -292,4 +364,26 @@ class ChartData{
   final num? high;
 }
 
+Color bgbuttoncolor(String inter)
+{
+  if(inter == _interval)
+    {
+      return(activebgbuttoncolor);
+    }
+  else
+    {
+      return(passivebgbuttoncolour);
+    }
+}
 
+Color txtbuttoncolor(String inter)
+{
+  if(inter == _interval)
+  {
+    return(activetxtcolor);
+  }
+  else
+  {
+    return(passivetxtcolor);
+  }
+}
