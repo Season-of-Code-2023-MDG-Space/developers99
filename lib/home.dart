@@ -48,10 +48,111 @@ class _HomePageState extends State<HomePage> {
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            children: const [
-              Align(
+            children: [
+              const Align(
                 alignment: Alignment.topCenter,
                 child: CardList(),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(Radius.circular(30),),
+                  color: Colors.indigo.shade50,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.shade400,
+                      blurRadius: 7.0,
+                      spreadRadius: 1.0,
+                      offset: const Offset(2.0, 2.0),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Text("Currency Market",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text("Open Chart",
+                          style: TextStyle(
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: const [
+                          Currency(currency: "EUR/USD", value: "14,321"),
+                          Currency(currency: "USD/GBP", value: "11,321"),
+                          Currency(currency: "USD/RUB", value: "10,221"),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ), //Currency Market Container
+              const SizedBox(
+                height: 20,
+              ),
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.all(20),
+                  children: [
+                    Container(
+                      height: 50,
+                      color: Colors.indigo[300],
+                      child: const Center(child: Text("Entry A"),),
+                    ),
+                    Container(
+                      height: 50,
+                      color: Colors.indigo[500],
+                      child: const Center(child: Text("Entry B", style: TextStyle(color: Colors.white),),),
+                    ),
+                    Container(
+                      height: 50,
+                      color: Colors.indigo[300],
+                      child: const Center(child: Text("Entry C"),),
+                    ),
+                    Container(
+                      height: 50,
+                      color: Colors.indigo[500],
+                      child: const Center(child: Text("Entry D",style: TextStyle(color: Colors.white),),),
+                    ),
+                    Container(
+                      height: 50,
+                      color: Colors.indigo[300],
+                      child: const Center(child: Text("Entry E"),),
+                    ),
+                    Container(
+                      height: 50,
+                      color: Colors.indigo[500],
+                      child: const Center(child: Text("Entry F",style: TextStyle(color: Colors.white),),),
+                    ),
+                    Container(
+                      height: 50,
+                      color: Colors.indigo[300],
+                      child: const Center(child: Text("Entry G"),),
+                    ),
+                    Container(
+                      height: 50,
+                      color: Colors.indigo[500],
+                      child: const Center(child: Text("Entry H",style: TextStyle(color: Colors.white),),),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -66,13 +167,49 @@ class CardList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return CarouselSlider.builder(
+        itemCount: cards.length,
+        itemBuilder: (BuildContext context,int i,int index){
+          return CardDesign(card: cards[index]);
+        },
+        options: CarouselOptions(initialPage: 0, enableInfiniteScroll: false, enlargeCenterPage: true),
+    );
+  }
+}
+
+class Currency extends StatelessWidget {
+  final String currency;
+  final String value;
+  const Currency({super.key, required this.currency,required this.value});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      child: CarouselSlider.builder(
-          itemCount: cards.length,
-          itemBuilder: (BuildContext context,int i,int index){
-            return CardDesign(card: cards[index]);
-          },
-          options: CarouselOptions(initialPage: 0, enableInfiniteScroll: false, enlargeCenterPage: true),
+      margin: const EdgeInsets.all(15),
+      width: 120,
+      height: 90,
+      decoration: BoxDecoration(
+        boxShadow: [BoxShadow(color: const Color(0xFF333333).withOpacity(0.14),
+          blurRadius: 2,
+          offset: const Offset(0,2),
+        ),],
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
+        color: Colors.white,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(currency, style: const TextStyle(
+            color: Colors.black54,
+          ),),
+          const SizedBox(
+            height: 5,
+          ),
+          Text(value,style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),)
+        ],
       ),
     );
   }
