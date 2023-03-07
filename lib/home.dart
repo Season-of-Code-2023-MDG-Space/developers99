@@ -96,8 +96,11 @@ class _HomePageState extends State<HomePage> {
                       child: Row(
                         children: const [
                           Currency(currency: "EUR/USD", value: "14,321"),
-                          Currency(currency: "USD/GBP", value: "11,321"),
+                          Currency(currency: "USD/GBP", value: "5,419"),
                           Currency(currency: "USD/RUB", value: "10,221"),
+                          Currency(currency: "XAU/USD", value: "17,563"),
+                          Currency(currency: "AUD/USD", value: "3,454"),
+                          Currency(currency: "NZD/USD", value: "8,946"),
                         ],
                       ),
                     ),
