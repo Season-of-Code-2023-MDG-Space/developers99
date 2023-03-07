@@ -114,40 +114,74 @@ class _HomePageState extends State<HomePage> {
                 child: ListView(
                   padding: const EdgeInsets.all(20),
                   children: [
+                    Row(
+                      children: const [
+                        Text("Your Trades",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     Container(
                       height: 50,
                       color: Colors.indigo[300],
                       child: const Center(child: Text("Entry A"),),
+                    ),
+                    const SizedBox(
+                      height: 5,
                     ),
                     Container(
                       height: 50,
                       color: Colors.indigo[500],
                       child: const Center(child: Text("Entry B", style: TextStyle(color: Colors.white),),),
                     ),
+                    const SizedBox(
+                      height: 5,
+                    ),
                     Container(
                       height: 50,
                       color: Colors.indigo[300],
                       child: const Center(child: Text("Entry C"),),
+                    ),
+                    const SizedBox(
+                      height: 5,
                     ),
                     Container(
                       height: 50,
                       color: Colors.indigo[500],
                       child: const Center(child: Text("Entry D",style: TextStyle(color: Colors.white),),),
                     ),
+                    const SizedBox(
+                      height: 5,
+                    ),
                     Container(
                       height: 50,
                       color: Colors.indigo[300],
                       child: const Center(child: Text("Entry E"),),
+                    ),
+                    const SizedBox(
+                      height: 5,
                     ),
                     Container(
                       height: 50,
                       color: Colors.indigo[500],
                       child: const Center(child: Text("Entry F",style: TextStyle(color: Colors.white),),),
                     ),
+                    const SizedBox(
+                      height: 5,
+                    ),
                     Container(
                       height: 50,
                       color: Colors.indigo[300],
                       child: const Center(child: Text("Entry G"),),
+                    ),
+                    const SizedBox(
+                      height: 5,
                     ),
                     Container(
                       height: 50,
