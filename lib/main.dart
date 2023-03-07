@@ -271,7 +271,9 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                       highValueMapper: (ChartData sales, _) => sales.high,
                       openValueMapper: (ChartData sales, _) => sales.open,
                       closeValueMapper: (ChartData sales, _) => sales.close)
-                ], primaryXAxis: DateTimeAxis(),
+                ], primaryXAxis: DateTimeAxis(labelStyle: TextStyle(color: Colors.white),
+                  majorGridLines: MajorGridLines(width: 0),),
+                    primaryYAxis: NumericAxis(labelStyle: TextStyle(color: Colors.white),),
                     zoomPanBehavior: _zoomPanBehavior,
                     tooltipBehavior: TooltipBehavior(enable: true)),
               ),
