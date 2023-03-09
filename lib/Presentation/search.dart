@@ -1,89 +1,78 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'Services/ApiService.dart';
+import '/Services/ApiService.dart';
 import 'dart:async';
-import 'package:testtest/Presentation/graph.dart';
+import '/Presentation/graph.dart';
 
 Timer? timer;
 
-class SearchScreen extends StatelessWidget{
+class SearchScreen extends StatefulWidget{
   const SearchScreen({super.key});
   @override
-  Widget build(BuildContext context)
-  {
-    return const MaterialApp(
-      title: "SearchBar",
-      home: SearchBarScreen(),
-    );
-  }
+  State<SearchScreen> createState() => _SearchBarScreen();
 }
 
-class SearchBarScreen extends StatefulWidget{
-  const SearchBarScreen({super.key});
-  @override
-  State<SearchBarScreen> createState() => _SearchBarScreen();
-}
-@override
-class _SearchBarScreen extends State<SearchBarScreen> {
+class _SearchBarScreen extends State<SearchScreen> {
+  _SearchBarScreen();
   List<Result> lisres = [];
   int length = 0;
 
   final TextEditingController mycontroller = TextEditingController();
-
-  Timer? searchOnStoppedTyping;
-
-  _onChangeHandler() {
-    const duration = Duration(milliseconds:200); // set the duration that you want call search() after that.
-    if (searchOnStoppedTyping != null) {
-      setState(() => searchOnStoppedTyping!.cancel()); // clear timer
-    }
-    setState(() => searchOnStoppedTyping = Timer(duration, () async => lisres = await Search(searchterm: mycontroller.text)));
-  }
+  String searchString = "AAPL";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(elevation: 10, title: Text("Search Bar"),),
+        appBar: AppBar(elevation: 10, centerTitle: true,
+          title: const Text("Search Bar", style: TextStyle(fontSize: 30, fontFamily: 'ConcertOne'),),
+          shape: const RoundedRectangleBorder(
+              borderRadius: 
+              BorderRadius.only(bottomRight: Radius.circular(30), bottomLeft: Radius.circular(30))),),
         body:
-        Column(
-            children: [Material(
-              elevation: 20,
-              child:
+        Column(children:[
               Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: TextField(controller: mycontroller,
-                    onChanged: (text) {
-                    if(text != '' && text != ' '){
-                            _onChangeHandler();
-                            length = lisres.length;
-                        }
-                      },
-                    decoration: InputDecoration(border: OutlineInputBorder(),
+                  padding: EdgeInsets.only(top: 20, left: 10, right: 10),
+                  child:TextField(controller: mycontroller,
+                    onChanged: (text){setState(() {
+                      searchString = mycontroller.text;
+                    });},
+                    decoration: const InputDecoration(border: OutlineInputBorder(),
                         hintText: "Enter the name..."),)
               ),
-            ),
-        if(length != 0 && mycontroller.text != '' && lisres != [])
-          (
-            Expanded(child: ListView.builder(
-                padding: const EdgeInsets.only(top: 5),
-                itemCount: length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    onTap:() {SetStockName(lisres[index].Symbol.toString(),lisres[index].Name.toString());
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => graphapp()));},
-                    title: Text(
-                      lisres[index].Name.toString() +
-                          "           " + lisres[index].Symbol.toString(),
-                      textAlign: TextAlign.left,
-                      style: TextStyle(fontSize: 15,),));
-                })
-                  ))
-              else
-                (
-                  Icon(Icons.circle_outlined)
-                )
+        Expanded(child: FutureBuilder<List<Result>>(
+          future: Search(searchterm: searchString),
+          builder: (context, AsyncSnapshot<List<Result>> snapshot){
+            if(snapshot.hasError){
+              return Center(
+                child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                    children:const [
+                  Icon(Icons.error, color: Colors.red,size: 90,
+                    shadows: [Shadow(offset: Offset(5, 5),blurRadius: 10, color: Colors.black38)],),
+                  Text("NO INPUT PROVIDED", style: TextStyle(color: Colors.red, fontSize: 30,
+                    shadows: [Shadow(offset: Offset(5, 5),blurRadius: 10, color: Colors.black26)],),)]
+              ));
+            }
+            else if(snapshot.hasData)
+            {
+              final result = snapshot.data!;
+
+              return (
+                  ListView(
+                    children: result.map(buildUser).toList(),
+                  ));
+            }
+            else
+            {
+              return const Center(child: CircularProgressIndicator());
+            }
+          },
+        ),)
         ]));
   }
+  Widget buildUser(Result res) => ListTile(
+    leading: CircleAvatar(child: Text(res.Symbol![0])),
+    subtitle: Text(res.Symbol!),
+    title: Text(res.Name!),
+    onTap: (){mycontroller.text = res.Symbol!;},
+  );
 }

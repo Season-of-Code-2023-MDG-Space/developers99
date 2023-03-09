@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:trading_app/cardDesign.dart';
 import 'package:trading_app/dataset.dart';
+import 'Presentation/sidemenu.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,14 +18,15 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.indigo.shade900,
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () => debugPrint("menu"),
-        ),
-        actions: [
-          IconButton(onPressed: ()=>debugPrint('setting'), icon: const Icon(Icons.settings))
-        ],
+        // leading: IconButton(
+        //   icon: const Icon(Icons.menu),
+        //   onPressed: () => ,
+        // ),
+        // actions: [
+        //   IconButton(onPressed: ()=>debugPrint('setting'), icon: const Icon(Icons.settings))
+        // ],
       ),
+      drawer: NavDrawer(),
       body: Stack(
         children: [
           Align(

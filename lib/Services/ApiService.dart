@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math';
@@ -9,13 +10,14 @@ import 'dart:math';
 //   HttpRequestException(this.message);
 // }
 
-Future<List<Stonks>> FetchSeries({String interval = "1m", required String name}) async {
+Future<List<Stonks>> FetchSeries({String interval = "1m", required String name,int numberofresp = 0}) async {
   final response = await http.get(Uri.parse(
       "https://query1.finance.yahoo.com/v8/finance/chart/$name?interval=$interval&includePrePost=true&period2=${(DateTime.now().microsecondsSinceEpoch ~/ pow(10, 6)) + 6000}&useYfid=true"));
     final mapResponse = json.decode(response.body);
     List <Stonks> Stocks = [];
     List <dynamic> _temp = mapResponse["chart"]["result"][0]["timestamp"];
-      for(int i = 0; i < _temp.length; i++)
+      //for(int i = _temp.length - 1; i >= numberofresp; i--)
+        for(int i = numberofresp; i < _temp.length; i++)
         {
           Stocks.add(Stonks(Date_Time:DateTime.fromMillisecondsSinceEpoch(_temp[i] * 1000),
               open: mapResponse["chart"]["result"][0]["indicators"]["quote"][0]["open"][i],

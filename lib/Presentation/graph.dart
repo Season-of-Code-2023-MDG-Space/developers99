@@ -1,5 +1,5 @@
 import 'dart:async';
-import '/search.dart';
+import 'search.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 import '/Services/ApiService.dart';
@@ -8,7 +8,6 @@ Timer? timer;
 
 late List<ChartData> _chartData;
 List<Stonks>? StockIntra;
-late int length;
 String _StockName = "HINDALCO.NS";
 String _StockLongName = "Hindalco Industries Ltd";
 int nsel = 1;
@@ -49,6 +48,7 @@ class BottomSelectionWidget extends StatefulWidget {
 }
 
 class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
+  late int length;
   CurrentStat CurrentPriceStatus = new CurrentStat();
   @override
   void initState(){
@@ -61,13 +61,15 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
         // Enables the selection zooming
         enableSelectionZooming: true
     );
-    Future.delayed(Duration.zero,() async {
-      StockIntra = await FetchSeries(name:_StockName);
-      CurrentPriceStatus = await Currentstatus(name: _StockName);
+    setState(() {
+      Future.delayed(Duration.zero,() async {
+        StockIntra = await FetchSeries(name:_StockName);
+        CurrentPriceStatus = await Currentstatus(name: _StockName);
+      });
+      length = StockIntra!.length;
+      _chartData = getChartData(length: length, StockData: StockIntra!);
+      timer = Timer.periodic(Duration(seconds:2), (Timer t) => ChangeVar(interv: _interval));
     });
-    length = StockIntra!.length;
-    _chartData = getChartData();
-    timer = Timer.periodic(Duration(seconds:2), (Timer t) => ChangeVar(interv: _interval));
     super.initState();
   }
   @override
@@ -79,8 +81,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
         CurrentPriceStatus = await Currentstatus(name: _StockName);
       });
       length = StockIntra!.length;
-      getChartData();
-      _chartData = getChartData();
+      _chartData = getChartData(length: length,  StockData: StockIntra!);
     });
   }
 
@@ -112,17 +113,6 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
     return Scaffold(backgroundColor: Color(0xff000013),
         appBar: AppBar(backgroundColor: Colors.black,
           title: Row(children: [
-            Container(
-                height: 50,
-                width: 50,
-                child: FloatingActionButton(child:Icon(Icons.search),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    backgroundColor: Colors.amberAccent,
-                    onPressed: (){Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SearchScreen(),)
-                    );})),
-
             Column(children:<Widget>[Container(child:
             Text('$_StockName',style:TextStyle(fontSize: 25, fontFamily: 'ConcertOne',),),
               padding: EdgeInsets.only(left: 80),),
@@ -254,43 +244,22 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
               Container( color: Color(0xff000013),
                 height: 400,
                 child:SfCartesianChart(series: <CandleSeries>[
-                  CandleSeries<ChartData, DateTime>(
-                      bearColor: Colors.red.shade500,
-                      bullColor: Colors.green.shade600,
-                      dataSource: _chartData,
-                      xValueMapper: (ChartData sales, _) => sales.x,
-                      lowValueMapper: (ChartData sales, _) => sales.low,
-                      highValueMapper: (ChartData sales, _) => sales.high,
-                      openValueMapper: (ChartData sales, _) => sales.open,
-                      closeValueMapper: (ChartData sales, _) => sales.close)
-                ], primaryXAxis: DateTimeAxis(labelStyle: TextStyle(color: Colors.white),
-                  majorGridLines: MajorGridLines(width: 0),),
+                    CandleSeries<ChartData, DateTime>(
+                    bearColor: Colors.red.shade500,
+                    bullColor: Colors.green.shade600,
+                    dataSource: _chartData,
+                    xValueMapper: (ChartData sales, _) => sales.x,
+                    lowValueMapper: (ChartData sales, _) => sales.low,
+                    highValueMapper: (ChartData sales, _) => sales.high,
+                    openValueMapper: (ChartData sales, _) => sales.open,
+                    closeValueMapper: (ChartData sales, _) => sales.close)
+                    ], primaryXAxis: DateTimeAxis(labelStyle: TextStyle(color: Colors.white),
+                    majorGridLines: MajorGridLines(width: 0),),
                     primaryYAxis: NumericAxis(labelStyle: TextStyle(color: Colors.white),),
                     zoomPanBehavior: _zoomPanBehavior,
-                    tooltipBehavior: TooltipBehavior(enable: true)),
+                    tooltipBehavior: TooltipBehavior(enable: true)
+                    )
               ),
-              // Padding(
-              //     padding: EdgeInsets.only(left: 10, top: 2),
-              //     child: Text('Date+Time' + "               " + "Value",
-              //         style: TextStyle(fontSize: 20, color: Colors.red))),
-              // Expanded(
-              //     child: Container(
-              //         padding: EdgeInsets.only(left: 120),
-              //         child: ListView.builder(
-              //             padding: const EdgeInsets.only(top: 5),
-              //             itemCount: length,
-              //             itemBuilder: (BuildContext context, int index) {
-              //               return Container(
-              //                 height: 50,
-              //                 child: Container(
-              //                     child: Text(
-              //                         StockIntra![index].Date_Time!.toString() +
-              //                             "        " +
-              //                             StockIntra![index].open.toString(),
-              //                         style: TextStyle(fontSize: 15))),
-              //               );
-              //             }))),
-              //Floating Action button
               Row(children: [Container(
                   height: 40,
                   padding: EdgeInsets.only(left: 120),
@@ -318,31 +287,21 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
               ]),
             ]));
   }
-  List<ChartData> getChartData() {
-    return <ChartData>[
-      for (int i = 0; i < length; i++)
-        ChartData(
-          x: StockIntra![i].Date_Time,
-          open: StockIntra![i].open,
-          close: StockIntra![i].close,
-          low: StockIntra![i].low,
-          high: StockIntra![i].high,
-        )
-    ];
-  }
-  List<ChartData> getChartData1() {
-    return <ChartData>[
-      for (int i = 0; i < length; i++)
-        ChartData(
-          x: StockIntra![i].Date_Time,
-          open: StockIntra![i].open,
-          close: StockIntra![i].close,
-          low: StockIntra![i].low,
-          high: StockIntra![i].high,
-        )
-    ];
-  }
 }
+
+List<ChartData> getChartData({required int length, required List<Stonks>StockData}) {
+  return <ChartData>[
+    for (int i = 0; i < length; i++)
+      ChartData(
+        x: StockData[i].Date_Time,
+        open: StockData[i].open,
+        close: StockData[i].close,
+        low: StockData[i].low,
+        high: StockData[i].high,
+      )
+  ];
+}
+
 
 class ChartData{
   ChartData({this.x,
