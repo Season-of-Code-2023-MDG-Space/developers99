@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'Services/ApiService.dart';
 import 'dart:async';
-import 'main.dart';
+import 'package:testtest/Presentation/graph.dart';
 
 Timer? timer;
 
@@ -72,7 +72,7 @@ class _SearchBarScreen extends State<SearchBarScreen> {
                     onTap:() {SetStockName(lisres[index].Symbol.toString(),lisres[index].Name.toString());
                     Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => MyApp()));},
+                        MaterialPageRoute(builder: (context) => graphapp()));},
                     title: Text(
                       lisres[index].Name.toString() +
                           "           " + lisres[index].Symbol.toString(),
