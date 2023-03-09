@@ -13,6 +13,8 @@ class UserSharedPreferences{
 
   static const String _Price = "";
 
+  static const String _StockName = "HINDALCO.NS";
+
   static Future init() async{
     _preferences = await SharedPreferences.getInstance();
   }
@@ -25,6 +27,9 @@ class UserSharedPreferences{
 
   static Future setPassword(String password) async => _preferences!.setString(_UserName, password);
   static getPassword() => _preferences!.get(_Password);
+
+  static Future setStockName(String stockname) async => _preferences!.setString(_StockName, stockname);
+  static getStockName() => _preferences!.get(_StockName);
 
   static Future setWishList(List<String> wishlist) async => _preferences!.setStringList(_WishList, wishlist);
   static getWishList() => _preferences!.getStringList(_WishList);
