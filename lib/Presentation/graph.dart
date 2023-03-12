@@ -1,28 +1,10 @@
 import 'dart:async';
-import 'search.dart';
+//import 'search.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 import '/Services/ApiService.dart';
 
 Timer? timer;
-
-late List<ChartData> _chartData;
-List<Stonks>? StockIntra;
-String _StockName = "HINDALCO.NS";
-String _StockLongName = "Hindalco Industries Ltd";
-int nsel = 1;
-String _interval = "1m";
-
-Color passivebgbuttoncolour = const Color(0xff000033);
-Color activebgbuttoncolor = Color(0xff000063);
-Color activetxtcolor = Colors.white;
-Color passivetxtcolor = Colors.white60;
-
-
-void SetStockName(String stockname, String stocklongname){
-  _StockName = stockname;
-  _StockLongName = stocklongname;
-}
 
 class graphapp extends StatelessWidget {
   const graphapp({super.key});
@@ -48,6 +30,24 @@ class BottomSelectionWidget extends StatefulWidget {
 }
 
 class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
+
+  void SetStockName(String stockname, String stocklongname){
+    _StockName = stockname;
+    _StockLongName = stocklongname;
+  }
+
+  List<Stonks>? StockIntra;
+  String _StockName = "AAPL";
+  String _StockLongName = "APPLE INC.";
+  int nsel = 1;
+  String _interval = "1m";
+
+  Color passivebgbuttoncolour = const Color(0xff000033);
+  Color activebgbuttoncolor = Color(0xff000063);
+  Color activetxtcolor = Colors.white;
+  Color passivetxtcolor = Colors.white60;
+
+
   late int length;
   CurrentStat CurrentPriceStatus = new CurrentStat();
   @override
@@ -63,13 +63,13 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
     );
     setState(() {
       Future.delayed(Duration.zero,() async {
-        StockIntra = await FetchSeries(name:_StockName);
-        CurrentPriceStatus = await Currentstatus(name: _StockName);
+        //StockIntra = await FetchSeries(name:_StockName);
+      CurrentPriceStatus = await Currentstatus(name: _StockName);
       });
-      length = StockIntra!.length;
-      _chartData = getChartData(length: length, StockData: StockIntra!);
+       //length = StockIntra!.length;
+       //_chartData = getChartData(length: length, StockData: StockIntra!);
       timer = Timer.periodic(Duration(seconds:2), (Timer t) => ChangeVar(interv: _interval));
-    });
+     });
     super.initState();
   }
   @override
@@ -77,11 +77,11 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
   {
     setState((){
       Future.delayed(Duration(milliseconds: 200),() async {
-        StockIntra = await FetchSeries(name:_StockName , interval: interv);
+        //StockIntra = await FetchSeries(name:_StockName , interval: interv);
         CurrentPriceStatus = await Currentstatus(name: _StockName);
       });
-      length = StockIntra!.length;
-      _chartData = getChartData(length: length,  StockData: StockIntra!);
+      //length = StockIntra!.length;
+      //_chartData = getChartData(length: length,  StockData: StockIntra!);
     });
   }
 
@@ -124,13 +124,34 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
         body:
         Column(
             children :[
-              Column(children: [
-                Text("${CurrentPriceStatus.RegMarketPrice}", style: TextStyle(color: Colors.white, fontSize: 40),),
-                Row(children: [Container(padding: EdgeInsets.only(left: 130),
-                    child:Text("${CurrentPriceStatus.ChangeAmt}",
-                      style: TextStyle(fontSize: 17, color: (CurrentPriceStatus.ChangeAmt! > 0)? Colors.green : Colors.red),)),
-                  Text("  (${CurrentPriceStatus.ChangePer}%)", style: TextStyle(fontSize: 17,color: (CurrentPriceStatus.ChangePer! > 0)? Colors.green : Colors.red),)
-                ],),]),
+              FutureBuilder<CurrentStat>(
+                future: Currentstatus(name: _StockName),
+                builder: (context, AsyncSnapshot<CurrentStat> snapshot){
+                  if(snapshot.hasError){
+                    return Center(
+                        child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                            children:const [
+                              Icon(Icons.error, color: Colors.red,size: 90,),
+                            ]));
+                  }
+                  else if(snapshot.hasData)
+                  {
+                    CurrentStat _temp = snapshot.data!;
+                    return(Column(children: [
+                      Text("${_temp.RegMarketPrice}", style: TextStyle(color: Colors.white, fontSize: 40)
+                      ),
+                    Row(children: [Container(padding: EdgeInsets.only(left: 130),
+                    child:Text("${_temp.ChangeAmt}",
+                    style: TextStyle(fontSize: 17, color: (_temp.ChangeAmt! > 0)? Colors.green : Colors.red),)),
+                    Text("  (${_temp.ChangePer}%)", style: TextStyle(fontSize: 17,color: (_temp.ChangePer! > 0)? Colors.green : Colors.red),),
+                    ])]));
+                  }
+                  else
+                  {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
+              ),
               Row(
                   children: [
                     Container(
@@ -243,22 +264,27 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                     ),]),
               Container( color: Color(0xff000013),
                 height: 400,
-                child:SfCartesianChart(series: <CandleSeries>[
-                    CandleSeries<ChartData, DateTime>(
-                    bearColor: Colors.red.shade500,
-                    bullColor: Colors.green.shade600,
-                    dataSource: _chartData,
-                    xValueMapper: (ChartData sales, _) => sales.x,
-                    lowValueMapper: (ChartData sales, _) => sales.low,
-                    highValueMapper: (ChartData sales, _) => sales.high,
-                    openValueMapper: (ChartData sales, _) => sales.open,
-                    closeValueMapper: (ChartData sales, _) => sales.close)
-                    ], primaryXAxis: DateTimeAxis(labelStyle: TextStyle(color: Colors.white),
-                    majorGridLines: MajorGridLines(width: 0),),
-                    primaryYAxis: NumericAxis(labelStyle: TextStyle(color: Colors.white),),
-                    zoomPanBehavior: _zoomPanBehavior,
-                    tooltipBehavior: TooltipBehavior(enable: true)
-                    )
+                child:FutureBuilder<SfCartesianChart>(
+                  future: getGraph(symb: _StockName),
+                  builder: (context, AsyncSnapshot<SfCartesianChart> snapshot){
+                  if(snapshot.hasError){
+                    return Center(
+                    child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                    children:const [
+                    Icon(Icons.error, color: Colors.red,size: 90,),
+                  ]));
+                  }
+                  else if(snapshot.hasData)
+                  {
+                  final result = snapshot.data!;
+                    return (result);
+                  }
+                    else
+                    {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                  },
+              ),
               ),
               Row(children: [Container(
                   height: 40,
@@ -287,21 +313,66 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
               ]),
             ]));
   }
-}
+  Future <SfCartesianChart> getGraph({required String symb})async
+  {
+    CurrentPriceStatus = await Currentstatus(name:symb);
+    List<Stonks>Stonkdata = await FetchSeries(name:symb);
+    return(
+        SfCartesianChart(series: <CandleSeries>[
+          CandleSeries<ChartData, DateTime>(
+              bearColor: Colors.red.shade500,
+              bullColor: Colors.green.shade600,
+              dataSource: getChartData(length: Stonkdata.length, StockData: Stonkdata),
+              xValueMapper: (ChartData sales, _) => sales.x,
+              lowValueMapper: (ChartData sales, _) => sales.low,
+              highValueMapper: (ChartData sales, _) => sales.high,
+              openValueMapper: (ChartData sales, _) => sales.open,
+              closeValueMapper: (ChartData sales, _) => sales.close)
+        ], primaryXAxis: DateTimeAxis(labelStyle: TextStyle(color: Colors.white),
+          majorGridLines: MajorGridLines(width: 0),),
+            primaryYAxis: NumericAxis(labelStyle: TextStyle(color: Colors.white),),
+            zoomPanBehavior: _zoomPanBehavior,
+            tooltipBehavior: TooltipBehavior(enable: true)
+        )
+    );
+  }
+  List<ChartData> getChartData({required int length, required List<Stonks>StockData}) {
+    return <ChartData>[
+      for (int i = 0; i < length; i++)
+        ChartData(
+          x: StockData[i].Date_Time,
+          open: StockData[i].open,
+          close: StockData[i].close,
+          low: StockData[i].low,
+          high: StockData[i].high,
+        )
+    ];
+  }
 
-List<ChartData> getChartData({required int length, required List<Stonks>StockData}) {
-  return <ChartData>[
-    for (int i = 0; i < length; i++)
-      ChartData(
-        x: StockData[i].Date_Time,
-        open: StockData[i].open,
-        close: StockData[i].close,
-        low: StockData[i].low,
-        high: StockData[i].high,
-      )
-  ];
-}
+  Color bgbuttoncolor(String inter)
+  {
+  if(inter == _interval)
+  {
+  return(activebgbuttoncolor);
+  }
+  else
+  {
+  return(passivebgbuttoncolour);
+  }
+  }
 
+  Color txtbuttoncolor(String inter)
+  {
+  if(inter == _interval)
+  {
+  return(activetxtcolor);
+  }
+  else
+  {
+  return(passivetxtcolor);
+  }
+  }
+}
 
 class ChartData{
   ChartData({this.x,
@@ -315,28 +386,4 @@ class ChartData{
   final num? close;
   final num? low;
   final num? high;
-}
-
-Color bgbuttoncolor(String inter)
-{
-  if(inter == _interval)
-  {
-    return(activebgbuttoncolor);
-  }
-  else
-  {
-    return(passivebgbuttoncolour);
-  }
-}
-
-Color txtbuttoncolor(String inter)
-{
-  if(inter == _interval)
-  {
-    return(activetxtcolor);
-  }
-  else
-  {
-    return(passivetxtcolor);
-  }
 }

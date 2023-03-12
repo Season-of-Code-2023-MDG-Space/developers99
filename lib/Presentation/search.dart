@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '/Services/ApiService.dart';
 import 'dart:async';
-import '/Presentation/graph.dart';
+//import '/Presentation/graph.dart';
 
 Timer? timer;
 
@@ -22,9 +22,10 @@ class _SearchBarScreen extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(elevation: 10, centerTitle: true,
-          title: const Text("Search Bar", style: TextStyle(fontSize: 30, fontFamily: 'ConcertOne'),),
+    return Scaffold(backgroundColor:  Color(0xFF202D3E),
+        appBar: AppBar(backgroundColor:Color(0xFF303D4E),
+        elevation: 10, centerTitle: true,
+          title: const Text("SEARCH BAR", style: TextStyle(fontSize: 30, fontFamily: 'ConcertOne'),),
           shape: const RoundedRectangleBorder(
               borderRadius: 
               BorderRadius.only(bottomRight: Radius.circular(30), bottomLeft: Radius.circular(30))),),
@@ -32,11 +33,12 @@ class _SearchBarScreen extends State<SearchScreen> {
         Column(children:[
               Padding(
                   padding: EdgeInsets.only(top: 20, left: 10, right: 10),
-                  child:TextField(controller: mycontroller,
+                  child:TextField(
+                    controller: mycontroller,
                     onChanged: (text){setState(() {
                       searchString = mycontroller.text;
                     });},
-                    decoration: const InputDecoration(border: OutlineInputBorder(),
+                    decoration: const InputDecoration(filled: true,fillColor: Colors.white,border: OutlineInputBorder(),
                         hintText: "Enter the name..."),)
               ),
         Expanded(child: FutureBuilder<List<Result>>(
@@ -69,10 +71,14 @@ class _SearchBarScreen extends State<SearchScreen> {
         ),)
         ]));
   }
-  Widget buildUser(Result res) => ListTile(
+  @override
+  Widget buildUser(Result res) => ListTile(tileColor: Color(0xFF202D3E),
     leading: CircleAvatar(child: Text(res.Symbol![0])),
-    subtitle: Text(res.Symbol!),
-    title: Text(res.Name!),
+    subtitle: Text(res.Symbol!,style:TextStyle(color: Colors.white70),),
+    title: Text(res.Name!, style: TextStyle(color: Colors.white),),
     onTap: (){mycontroller.text = res.Symbol!;},
+    shape: RoundedRectangleBorder(
+      side: BorderSide(color: Colors.white70, width: 1,),
+    ),
   );
 }

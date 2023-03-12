@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:trading_app/Presentation/sidemenu.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:trading_app/Services/firebase.dart';
-import 'graph.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
+//import 'graph.dart';
+//import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:trading_app/Services/ApiService.dart';
-import 'dart:math';
+import 'dart:async';
+
+//Timer? timer;
 
 class PortfolioPage extends StatelessWidget {
   const PortfolioPage({super.key});
@@ -31,27 +33,27 @@ class _PortfolioPage extends State<PortfolioPageScreen> {
   @override
   void initState() {
     super.initState();
+    //timer = Timer.periodic(Duration(seconds:2), (Timer t) => ChangeVar(interv: _interval));
     Firebase.initializeApp().whenComplete(() {
       setState(() {});
     });
   }
+  //void RefreshData();
   @override
   Widget build(BuildContext context)
   {
     return Scaffold(
-        backgroundColor: Colors.indigo.shade500,
-        appBar: AppBar(elevation: 0,
-          backgroundColor: Colors.indigo.shade900,
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30))),
+        backgroundColor: Color.fromRGBO(42, 59, 84, 1),
+        appBar: AppBar(elevation: 10,shadowColor: Colors.black,
+          backgroundColor: Color.fromRGBO(32, 45, 62, 1),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(
+              Radius.circular(30))),
           centerTitle: true,
           title: const Text("PORTFOLIO", style:TextStyle(fontFamily: 'ConcertOne',fontSize: 25)),
         ),
             drawer: NavDrawer(),
-            body:Column(children:[Row(children:[Padding(padding: EdgeInsets.only(left: 10),
-              child:Card(elevation: 5,
-              child: Text("Company Name"),))]),
-            Expanded(child: StreamBuilder<List<User>>(
+            body:
+            StreamBuilder<List<User>>(
               stream: readUserStocks(),
               builder: (context, snapshot){
                 if(snapshot.hasError){
@@ -74,8 +76,8 @@ class _PortfolioPage extends State<PortfolioPageScreen> {
                 {
                   stonks = snapshot.data!;
                   return (
-                      ListView(padding: const EdgeInsets.all(10),
-                        itemExtent: 200,
+                      ListView(padding: const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 15),
+                        itemExtent: 125,
                         children:
                           stonks!.map(buildUser).toList(),
                       ));
@@ -85,34 +87,45 @@ class _PortfolioPage extends State<PortfolioPageScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
               },
-            )
-            )]));
+            ));
   }
   Widget buildUser(User user) =>
-        Padding(padding: const EdgeInsets.only(top: 10),
+        Padding(padding: const EdgeInsets.only(top: 25),
         child:
-        Card(color: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                elevation: 5,
+        Container(
+                decoration:const BoxDecoration(color: Color.fromRGBO(42, 59, 84, 1),
+                    boxShadow:[BoxShadow(
+                      color: Color.fromRGBO(0, 0, 0, 0.35),
+                      blurRadius: 6.0,
+                      spreadRadius: 3,
+                      offset: Offset(
+                        4,
+                        4,
+                      ),
+                    ),],
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                shape: BoxShape.rectangle,
+                ),
                 child:Padding(padding: const EdgeInsets.only(top: 10),
                     child:ListTile(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 //leading: CircleAvatar(radius: 30,child: Text(user.stockvol.toString()),),
-                title: Column(
-                      children:[Center(child:
-                  Text(user.name.toUpperCase(),style: const TextStyle(
-                    fontSize: 25, fontFamily: "RubikMono",color: Colors.red,),),),
-                        Column(
+                title: Row(
+                children:[Container(child:Column(crossAxisAlignment: CrossAxisAlignment.center,
+                      children:[
+                          Text('${user.stockvol}QTY.  AVG.150',
+                            style: const TextStyle(fontSize: 20,fontFamily: "LondrinaSolid", height: 0.4, color: Color.fromRGBO(102, 115, 132, 1),
+                            ),),
+                        Column(//crossAxisAlignment: CrossAxisAlignment.start,
                     children:[
-                      Text("(${user.symbol})",style: const TextStyle(
-                        fontSize: 20, fontFamily: "LondrinaSolid",color: Colors.black38,),),
-                    Padding(padding: const EdgeInsets.only(),
-                        child:Text('BuyPrice: ${user.buyprice}', style: const TextStyle(fontSize: 20,fontFamily: "LondrinaSolid"),)),
-                      Padding(padding: const EdgeInsets.only(),
-                          child:Text('Stock: ${user.stockvol}', style: const TextStyle(fontSize: 20,fontFamily: "LondrinaSolid"),)),
-                    Padding(padding: const EdgeInsets.only(),
+                      Text(user.name.toUpperCase(),style: const TextStyle(
+                        fontSize: 25, fontFamily: "RubikMono",color: Colors.white, height: 1.4)),
+                      Column(crossAxisAlignment: CrossAxisAlignment.center,
+                        children:[Text("(${user.symbol})",style: const TextStyle(
+                        fontSize: 20, fontFamily: "LondrinaSolid",color: Color.fromRGBO(67, 93, 126, 1), height: 0.6),),]),
+                    Padding(padding: const EdgeInsets.only(top: 5),
                     child:Column(children:[
-                Text('SHARES OWNED: ${user.stockvol}',style: TextStyle(fontFamily: "LondrinaSolid",fontSize: 20),)]))]),
+                Text('INVESTED.${user.stockvol * user.buyprice}',style: TextStyle(fontFamily: "LondrinaSolid",fontSize: 20,color: Color.fromRGBO(123, 147, 176, 1)),)]))]),
   //                 SizedBox(height: 200,
   //                     width: 200,
   //                     child:FutureBuilder<SfCartesianChart>(
@@ -138,38 +151,79 @@ class _PortfolioPage extends State<PortfolioPageScreen> {
   //                       },
   //                     )
   // )
-                      ])))));
-
-  Future <SfCartesianChart> getGraph({required String symb})async
-  {
-    List<Stonks>Stonkdata = await FetchSeries(name:symb);
-    List<ChartData>_chartdata = getChartData(length: Stonkdata.length, StockData: Stonkdata);
-    return(
-        SfCartesianChart(plotAreaBorderColor: Colors.transparent,
-          series: <CandleSeries>[
-          CandleSeries<ChartData, DateTime>(
-              bearColor: Colors.red.shade500,
-              bullColor: Colors.green.shade600,
-              dataSource: _chartdata,
-              xValueMapper: (ChartData sales, _) => sales.x,
-              lowValueMapper: (ChartData sales, _) => sales.low,
-              highValueMapper: (ChartData sales, _) => sales.high,
-              openValueMapper: (ChartData sales, _) => sales.open,
-              closeValueMapper: (ChartData sales, _) => sales.close)
-        ],  primaryXAxis: DateTimeAxis(
-            isVisible: true,
-            majorGridLines: const MajorGridLines(width: 0),),
-            primaryYAxis: NumericAxis(majorGridLines: const MajorGridLines(width: 0),isVisible: true),
-            tooltipBehavior: TooltipBehavior(enable: true),
-            zoomPanBehavior: ZoomPanBehavior(
-                //zoomMode: _zoomModeType,
-                enableMouseWheelZooming: true,
-                enableDoubleTapZooming: true,
-                enablePinching: true,
-                // Enables the selection zooming
-                enableSelectionZooming: true
-            ),
-        )
-    );
-  }
+                      ])),new Spacer(),
+                  Container(
+                  child: Column(
+                    children: [
+                  Text("CURRENT PRICE:",style: const TextStyle(
+                      fontSize: 20, fontFamily: "LondrinaSolid",color: Color.fromRGBO(67, 93, 126, 1), height: 0.4),),
+                    StreamBuilder<CurrentStat>(
+                      stream: Stream.periodic(const Duration(seconds: 2)).asyncMap((_) async {
+                        return Currentstatus(name: user.symbol);
+                      }),
+                      builder: (context, AsyncSnapshot<CurrentStat> snapshot){
+                        if(snapshot.hasError){
+                          return Center(
+                              child: Row(mainAxisAlignment: MainAxisAlignment.center,
+                                  children:const [
+                                    Icon(Icons.error, color: Colors.red,size: 20,),
+                                  ]));
+                        }
+                        else if(snapshot.hasData)
+                        {
+                          CurrentStat _temp = snapshot.data!;
+                          return(Column(children: [
+                            Column(children: [Container(
+                                child:Text("${_temp.ChangeAmt}",
+                                  style: TextStyle(fontSize: 32, color: (_temp.ChangeAmt! > 0)? Colors.green : Colors.red),)),
+                              Text("  (${_temp.ChangePer}%)",
+                                style: TextStyle(fontSize: 17,color: (_temp.ChangePer! > 0)? Colors.green : Colors.red, height: 0.6),
+                                ),
+                            ]),
+                            Row(children:[Text("LTP. ", style: TextStyle(color: Color.fromRGBO(123, 147, 176, 1),height: 1.45, fontSize: 20),),
+                            Text("${_temp.RegMarketPrice}", style: TextStyle(color: Colors.white, fontSize: 20, height: 1.45))]
+                            ),
+                          ]));
+                        }
+                        else
+                        {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                      },
+                    )
+                ],),)
+                ])
+                    ))));
+  // Future <SfCartesianChart> getGraph({required String symb})async
+  // {
+  //   List<Stonks>Stonkdata = await FetchSeries(name:symb);
+  //   List<ChartData>_chartdata = getChartData(length: Stonkdata.length, StockData: Stonkdata);
+  //   return(
+  //       SfCartesianChart(plotAreaBorderColor: Colors.transparent,
+  //         series: <CandleSeries>[
+  //         CandleSeries<ChartData, DateTime>(
+  //             bearColor: Colors.red.shade500,
+  //             bullColor: Colors.green.shade600,
+  //             dataSource: _chartdata,
+  //             xValueMapper: (ChartData sales, _) => sales.x,
+  //             lowValueMapper: (ChartData sales, _) => sales.low,
+  //             highValueMapper: (ChartData sales, _) => sales.high,
+  //             openValueMapper: (ChartData sales, _) => sales.open,
+  //             closeValueMapper: (ChartData sales, _) => sales.close)
+  //       ],  primaryXAxis: DateTimeAxis(
+  //           isVisible: true,
+  //           majorGridLines: const MajorGridLines(width: 0),),
+  //           primaryYAxis: NumericAxis(majorGridLines: const MajorGridLines(width: 0),isVisible: true),
+  //           tooltipBehavior: TooltipBehavior(enable: true),
+  //           zoomPanBehavior: ZoomPanBehavior(
+  //               //zoomMode: _zoomModeType,
+  //               enableMouseWheelZooming: true,
+  //               enableDoubleTapZooming: true,
+  //               enablePinching: true,
+  //               // Enables the selection zooming
+  //               enableSelectionZooming: true
+  //           ),
+  //       )
+  //   );
+  // }
 }
