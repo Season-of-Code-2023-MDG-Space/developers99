@@ -4,7 +4,8 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 import '/Services/ApiService.dart';
 import 'sidemenu.dart';
-import 'search.dart';
+import 'search1.dart';
+import 'package:trading_app/Services/localstorage.dart';
 
 class graphapp extends StatelessWidget {
   const graphapp({super.key});
@@ -18,9 +19,7 @@ class graphapp extends StatelessWidget {
     );
   }
 }
-String StockName = "AAPL";
-String StockLongName = "APPLE INC.";
-CurrentStat CurrentPriceStatus = CurrentStat();
+
 
 class BottomSelectionWidget extends StatefulWidget {
   const BottomSelectionWidget({super.key});
@@ -30,6 +29,10 @@ class BottomSelectionWidget extends StatefulWidget {
 }
 
 class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
+  String _StockName = UserSharedPreferences.getStockName() != null ? UserSharedPreferences.getStockName(): "AAPL";
+  String _StockLongName = UserSharedPreferences.getStockNameLong() != null ? UserSharedPreferences.getStockNameLong() : "APPLE INC.";
+  CurrentStat CurrentPriceStatus = CurrentStat();
+
   late ZoomPanBehavior _zoomPanBehavior;
   //List<Stonks>? StockIntra;
   Color passivebgbuttoncolour = const Color(0xff000033);
@@ -43,6 +46,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
   @override
   void initState(){
     //_zoomModeType = ZoomMode.x;
+    super.initState();
     _zoomPanBehavior = ZoomPanBehavior(
         enableMouseWheelZooming: true,
         enableDoubleTapZooming: true,
@@ -67,16 +71,16 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
             Column(children:<Widget>[Container(
               alignment: Alignment.center,
               child:
-            Text(StockName,style:const TextStyle(fontSize: 25, fontFamily: 'ConcertOne',),
+            Text(_StockName,style:const TextStyle(fontSize: 25, fontFamily: 'ConcertOne',),
                 textAlign: TextAlign.center,),),
               Container(padding: const EdgeInsets.only(top: 10,),
-                  child:Text(StockLongName, style: const TextStyle(fontSize: 15,fontWeight: FontWeight.w400, color: Colors.white54)))]),
+                  child:Text(_StockLongName, style: const TextStyle(fontSize: 15,fontWeight: FontWeight.w400, color: Colors.white54)))]),
             const Spacer(),
             FloatingActionButton(backgroundColor: Colors.transparent,
               elevation: 0,
               onPressed:() {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const SearchScreen()));
+                    MaterialPageRoute(builder: (context) => const SearchScreen1()));
               },
               child: const Icon(Icons.search),)
           ]),
@@ -87,7 +91,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
             children :[
               StreamBuilder<CurrentStat>(
                 stream: Stream.periodic(const Duration(seconds: 2)).asyncMap((_) async {
-                        return Currentstatus(name: StockName);}),
+                        return Currentstatus(name: _StockName);}),
                 builder: (context, AsyncSnapshot<CurrentStat> snapshot){
                   if(snapshot.hasError){
                     return Center(
@@ -116,9 +120,8 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
               ),
               Row(
                   children: [
-                    // ignore: prefer_const_constructors
-                    Padding(
-                      padding: const EdgeInsets.only(left: 10, top: 2),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 10, top: 2),
                       child: Text("DATA RANGE: ", style: TextStyle(color: Colors.white30),),
                     ),
                   DropdownButton<String>(
@@ -149,7 +152,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                 height: 400,
                 child:StreamBuilder<SfCartesianChart>(
                   stream: Stream.periodic(const Duration(seconds: 2)).asyncMap((_) async {
-                            return getGraph(symb: StockName, interval: _interval, zpan: _zoomPanBehavior);}),
+                            return getGraph(symb: _StockName, interval: _interval, zpan: _zoomPanBehavior);}),
                   builder: (context, AsyncSnapshot<SfCartesianChart> snapshot){
                   if(snapshot.hasError){
                     return Center(

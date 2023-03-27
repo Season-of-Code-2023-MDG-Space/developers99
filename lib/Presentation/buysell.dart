@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:trading_app/Presentation/sidemenu.dart';
+import 'package:trading_app/Services/firebase.dart';
 import 'graph.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:trading_app/Services/ApiService.dart';
@@ -33,6 +34,7 @@ class _BuySellScreen extends State<BuySellScreen> {
   String _range = "1D";
   int datasize = 0;
   int maxsize = 0;
+  final _controller = TextEditingController();
 
   int off = 0;
   ChartData? tempchartdata;
@@ -41,6 +43,7 @@ class _BuySellScreen extends State<BuySellScreen> {
   void initState() {
     super.initState();
     //callApi();
+    _controller.text = "0";
     if(off == 0)
     {timer1 = Timer.periodic(Duration(seconds: 2), (timer){ChangeData();});}
   }
@@ -108,9 +111,9 @@ class _BuySellScreen extends State<BuySellScreen> {
                 Row(mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("CHANGE: ", style: TextStyle(fontSize: 15, color: Colors.yellow.shade500),),
-                    Text(tempfetchprice!.ChangeAmt.toString().substring(0,tempfetchprice!.ChangeAmt.toString().length - 1 >= 6? 6: tempfetchprice!.ChangeAmt.toString().length - 1), style: TextStyle(fontSize: 25,
+                    Text(tempfetchprice!.ChangeAmt.toString().substring(0,tempfetchprice!.ChangeAmt.toString().length > 6? 6: tempfetchprice!.ChangeAmt.toString().length), style: TextStyle(fontSize: 25,
                     color: (tempfetchprice!.ChangeAmt! > 0)? Colors.lightGreen : Colors.red)),
-                    Text("(${tempfetchprice!.ChangePer.toString().substring(0,tempfetchprice!.ChangePer.toString().length - 1 >= 6? 6: tempfetchprice!.ChangeAmt.toString().length - 1)}%)", style: TextStyle(fontSize: 15,
+                    Text("(${tempfetchprice!.ChangePer.toString().substring(0,tempfetchprice!.ChangePer.toString().length - 1 >= 6? 6: tempfetchprice!.ChangeAmt.toString().length )}%)", style: TextStyle(fontSize: 15,
                     color: (tempfetchprice!.ChangePer! > 0)? Colors.lightGreen : Colors.red)),
                   ],
                 ),
@@ -122,7 +125,7 @@ class _BuySellScreen extends State<BuySellScreen> {
                               Text("CURRENT.", style: TextStyle(color: Colors.yellow.shade500), textAlign: TextAlign.center,),
                               Row(
                                 children: [
-                                  Text("${tempfetch.last.close.toString().substring(0,tempfetch.last.close.toString().length - 1 >= 6? 6: tempfetch.last.close.toString().length - 1)}",
+                                  Text("${tempfetch.last.close.toString().substring(0,tempfetch.last.close.toString().length > 6? 6: tempfetch.last.close.toString().length)}",
                                   style: TextStyle(color: (tempfetchprice!.ChangeAmt! > 0)? Colors.lightGreen : Colors.red, fontSize: 25),textAlign: TextAlign.center,),
                                   Icon((tempfetchprice!.ChangeAmt! > 0)? Icons.arrow_upward : Icons.arrow_downward, color: (tempfetchprice!.ChangeAmt! > 0)? Colors.lightGreen : Colors.red)
                                 ],
@@ -135,7 +138,7 @@ class _BuySellScreen extends State<BuySellScreen> {
                               Text("OPEN:", style: TextStyle(color: Colors.yellow.shade500), textAlign: TextAlign.center,),
                               Row(
                                 children: [
-                                  Text("${tempfetch.last.open.toString().substring(0,tempfetch.last.open.toString().length - 1 > 6? 6: tempfetch.last.open.toString().length - 1)}",
+                                  Text(tempfetch.last.open.toString().substring(0,tempfetch.last.open.toString().length> 6? 6: tempfetch.last.open.toString().length),
                                   style: TextStyle(color: Colors.grey, fontSize: 25),textAlign: TextAlign.center,),
                                 ],
                               )
@@ -147,7 +150,7 @@ class _BuySellScreen extends State<BuySellScreen> {
                               Text("HIGH:", style: TextStyle(color: Colors.yellow.shade500), textAlign: TextAlign.center,),
                               Row(
                                 children: [
-                                  Text("${tempfetch.last.high.toString().substring(0,tempfetch.last.high.toString().length - 1 > 6? 6: tempfetch.last.high.toString().length - 1)}",
+                                  Text(tempfetch.last.high.toString().substring(0,tempfetch.last.high.toString().length> 6? 6: tempfetch.last.high.toString().length),
                                   style: TextStyle(color: Colors.green, fontSize: 25),textAlign: TextAlign.center,),
                                 ],
                               )
@@ -159,7 +162,7 @@ class _BuySellScreen extends State<BuySellScreen> {
                               Text("LOW:", style: TextStyle(color: Colors.yellow.shade500), textAlign: TextAlign.center,),
                               Row(
                                 children: [
-                                  Text("${tempfetch.last.low.toString().substring(0,tempfetch.last.low.toString().length - 1 > 6? 6: tempfetch.last.low.toString().length - 1)}",
+                                  Text(tempfetch.last.low.toString().substring(0,tempfetch.last.low.toString().length - 1 > 6? 6: tempfetch.last.low.toString().length),
                                   style: TextStyle(color: Colors.red, fontSize: 25),textAlign: TextAlign.center,),
                                 ],
                               )
@@ -174,7 +177,7 @@ class _BuySellScreen extends State<BuySellScreen> {
           const SizedBox(height: 15),
           Center(
             child: SizedBox(
-              height: MediaQuery.of(context).size.height - 250,
+              height: MediaQuery.of(context).size.height - 330,
               width: MediaQuery.of(context).size.width - 10,
               child: Card(
                   color: Colors.white,
@@ -263,33 +266,35 @@ class _BuySellScreen extends State<BuySellScreen> {
                             {
                               final result = snapshot.data!;  
                               tempfetch = result;                                                    
-                              return (SfCartesianChart(plotAreaBorderWidth: 0,      
-                                        onChartTouchInteractionDown: (tapArgs) => off = 1,
-                                        onChartTouchInteractionUp: (tapArgs) => off = 0,                         
-                                        series: <CandleSeries>[
-                                          CandleSeries<ChartData, DateTime>(
-                                              onPointTap: (pointInteractionDetails) => {
-                                                _pointIndex = pointInteractionDetails.pointIndex},                                    
-                                              bearColor: const Color.fromARGB(255, 196, 7, 7),
-                                              bullColor: const Color.fromARGB(255, 59, 131, 61),
-                                              dataSource: list1,                                        
-                                              xValueMapper: (ChartData sales, _) => sales.x,
-                                              lowValueMapper: (ChartData sales, _) => sales.low,
-                                              highValueMapper: (ChartData sales, _) => sales.high,
-                                              openValueMapper: (ChartData sales, _) => sales.open,
-                                              closeValueMapper: (ChartData sales, _) => sales.close)
-                                        ], primaryXAxis: DateTimeAxis(labelStyle: TextStyle(color: Colors.black),
-                                          majorGridLines: const MajorGridLines(width: 0),
-                                        ),                                        
-                                        primaryYAxis: NumericAxis(axisLine: AxisLine(width: 0),
-                                          labelStyle: const TextStyle(fontSize: 0),
-                                          majorGridLines: const MajorGridLines(color: Colors.black26,),
-                                        ),
-                                        zoomPanBehavior: _zoomPanBehavior,
-                                        tooltipBehavior: TooltipBehavior(enable: true, 
-                                        duration: 5)
-                                    )
-                                );
+                              return Container(height: 230,
+                                child: (SfCartesianChart(plotAreaBorderWidth: 0,      
+                                          onChartTouchInteractionDown: (tapArgs) => off = 1,
+                                          onChartTouchInteractionUp: (tapArgs) => off = 0,                         
+                                          series: <CandleSeries>[
+                                            CandleSeries<ChartData, DateTime>(
+                                                onPointTap: (pointInteractionDetails) => {
+                                                  _pointIndex = pointInteractionDetails.pointIndex},                                    
+                                                bearColor: const Color.fromARGB(255, 196, 7, 7),
+                                                bullColor: const Color.fromARGB(255, 59, 131, 61),
+                                                dataSource: list1,                                        
+                                                xValueMapper: (ChartData sales, _) => sales.x,
+                                                lowValueMapper: (ChartData sales, _) => sales.low,
+                                                highValueMapper: (ChartData sales, _) => sales.high,
+                                                openValueMapper: (ChartData sales, _) => sales.open,
+                                                closeValueMapper: (ChartData sales, _) => sales.close)
+                                          ], primaryXAxis: DateTimeAxis(labelStyle: TextStyle(color: Colors.black),
+                                            majorGridLines: const MajorGridLines(width: 0),
+                                          ),                                        
+                                          primaryYAxis: NumericAxis(axisLine: AxisLine(width: 0),
+                                            labelStyle: const TextStyle(fontSize: 0),
+                                            majorGridLines: const MajorGridLines(color: Colors.black26,),
+                                          ),
+                                          zoomPanBehavior: _zoomPanBehavior,
+                                          tooltipBehavior: TooltipBehavior(enable: true, 
+                                          duration: 5)
+                                      )
+                                  ),
+                              );
                             }
                             else
                             {
@@ -305,7 +310,7 @@ class _BuySellScreen extends State<BuySellScreen> {
                                   Text("CLOSE", style: TextStyle(color: Color(0xFFC1C1C2),fontSize: 15), textAlign: TextAlign.center,),
                                   Row(
                                     children: [
-                                      Text(tempfetch[_pointIndex!].close.toString().substring(0, tempfetch[_pointIndex!].close.toString().length - 1 > 6? 6: tempfetch[_pointIndex!].close.toString().length - 1),
+                                      Text(tempfetch[_pointIndex!].close.toString().substring(0, tempfetch[_pointIndex!].close.toString().length > 6? 6: tempfetch[_pointIndex!].close.toString().length),
                                       style: TextStyle(color: Color(0xFFA0A0A0), fontSize: 20),textAlign: TextAlign.center,),                                      
                                     ],
                                   )
@@ -317,7 +322,7 @@ class _BuySellScreen extends State<BuySellScreen> {
                                   Text("OPEN:", style: TextStyle(color: Color(0xFFC1C1C2),fontSize: 15), textAlign: TextAlign.center,),
                                   Row(
                                     children: [
-                                      Text(tempfetch[_pointIndex!].open.toString().substring(0,tempfetch[_pointIndex!].close.toString().length - 1 > 6? 6: tempfetch[_pointIndex!].close.toString().length - 1),
+                                      Text(tempfetch[_pointIndex!].open.toString().substring(0,tempfetch[_pointIndex!].close.toString().length > 6? 6: tempfetch[_pointIndex!].close.toString().length),
                                       style: TextStyle(color: Color(0xFFA0A0A0), fontSize: 20),textAlign: TextAlign.center,),
                                     ],
                                   )
@@ -329,7 +334,7 @@ class _BuySellScreen extends State<BuySellScreen> {
                                   Text("HIGH:", style: TextStyle(color: Color(0xFFC1C1C2), fontSize: 15), textAlign: TextAlign.center,),
                                   Row(
                                     children: [
-                                      Text(tempfetch[_pointIndex!].high.toString().substring(0,tempfetch[_pointIndex!].close.toString().length - 1 > 6? 6: tempfetch[_pointIndex!].close.toString().length - 1),
+                                      Text(tempfetch[_pointIndex!].high.toString().substring(0,tempfetch[_pointIndex!].close.toString().length > 6? 6: tempfetch[_pointIndex!].close.toString().length),
                                       style: TextStyle(color: Color(0xFFA0A0A0), fontSize: 20),textAlign: TextAlign.center,),
                                     ],
                                   )
@@ -341,7 +346,7 @@ class _BuySellScreen extends State<BuySellScreen> {
                                   Text("LOW:", style: TextStyle(color: Color(0xFFC1C1C2),fontSize: 15), textAlign: TextAlign.center,),
                                   Row(
                                     children: [
-                                      Text(tempfetch[_pointIndex!].low.toString().substring(0,tempfetch[_pointIndex!].close.toString().length - 1 > 6? 6: tempfetch[_pointIndex!].close.toString().length - 1),
+                                      Text(tempfetch[_pointIndex!].low.toString().substring(0,tempfetch[_pointIndex!].close.toString().length > 6? 6: tempfetch[_pointIndex!].close.toString().length),
                                       style: TextStyle(color: Color(0xFFA0A0A0), fontSize: 20),textAlign: TextAlign.center,),
                                     ],
                                   )
@@ -355,6 +360,90 @@ class _BuySellScreen extends State<BuySellScreen> {
               ),
             ),
           ),
+          Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Center(
+          child: Container(
+            width: 60.0,
+            foregroundDecoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(5.0),
+              border: Border.all(
+                color: Colors.blueGrey,
+                width: 2.0,
+              ),
+            ),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  flex: 1,
+                  child: TextFormField(
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(8.0),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5.0),
+                      ),
+                    ),
+                    controller: _controller,
+                    keyboardType: TextInputType.numberWithOptions(
+                      decimal: false,
+                      signed: true,
+                    ),
+                  ),
+                ),
+                Container(
+                  height: 38.0,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              width: 0.5,
+                            ),
+                          ),
+                        ),
+                        child: InkWell(
+                          child: Icon(
+                            Icons.arrow_drop_up,
+                            size: 18.0,
+                          ),
+                          onTap: () {
+                            int currentValue = int.parse(_controller.text);
+                            setState(() {
+                              currentValue++;
+                              _controller.text = (currentValue)
+                                  .toString(); // incrementing value
+                            });
+                          },
+                        ),
+                      ),
+                      InkWell(
+                        child: Icon(
+                          Icons.arrow_drop_down,
+                          size: 18.0,
+                        ),
+                        onTap: () {
+                          int currentValue = int.parse(_controller.text);
+                          setState(() {
+                            print("Setting state");
+                            currentValue--;
+                            _controller.text =
+                                (currentValue > 0 ? currentValue : 0)
+                                    .toString(); // decrementing value
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
           Row(children: [
             Container(width: 90,
               decoration: BoxDecoration(border: Border.all(color: Colors.blue.shade900),
@@ -366,14 +455,22 @@ class _BuySellScreen extends State<BuySellScreen> {
             ),
             Spacer(),
             Container(width: 80,
-              child: FloatingActionButton(onPressed: null,
+              child: FloatingActionButton(onPressed:() 
+              {createstock(buyprice: (int.parse(_controller.text)) * tempfetch.last.close!, 
+              stockname: widget.Stockname, symbol: widget.Stockname, collectionname: 'Stonks', type: "sell", noofshares: int.parse(_controller.text));
+              createtransac(name: widget.Stockname, noofshares: int.parse(_controller.text), netamt: (int.parse(_controller.text)) * tempfetch.last.close!, 
+              sellprice: tempfetch.last.close!, transactype: 'sell');},
               backgroundColor: Colors.blue.shade900,
               child: Text("SELL"),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),),
             ),
             SizedBox(width: 10,),
             Container(width: 80,
-              child: FloatingActionButton(onPressed: null,
+              child: FloatingActionButton(onPressed: () 
+              {createstock(buyprice: (int.parse(_controller.text)) * tempfetch.last.close!, 
+              stockname: widget.Stockname, symbol: widget.Symbolname, collectionname: 'Stonks', type: "buy", noofshares: int.parse(_controller.text));
+              createtransac(name: widget.Stockname, noofshares: int.parse(_controller.text), netamt: (int.parse(_controller.text)) * tempfetch.last.close!, 
+              sellprice: tempfetch.last.close!, transactype: 'buy');},
               backgroundColor: Colors.blue.shade900,
               child: Text("BUY"),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(5))),),

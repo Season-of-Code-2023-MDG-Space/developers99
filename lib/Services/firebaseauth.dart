@@ -13,6 +13,7 @@ class FireAuth {
     required String email,
     required String password,
   }) async {
+    WidgetsFlutterBinding.ensureInitialized();
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
     try {

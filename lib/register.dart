@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trading_app/Services/firebaseauth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'Services/localstorage.dart';
 
 class MyRegister extends StatefulWidget {
   const MyRegister({Key? key}) : super(key: key);
@@ -104,7 +105,7 @@ class _MyRegisterState extends State<MyRegister> {
                           radius: 30.0,
                           backgroundColor: Colors.white70,
                           child: IconButton(
-                            onPressed:() async{
+                            onPressed:() async{                              
                                   User? user = await FireAuth.registerUsingEmailPassword(
                                     name: _nametextcontroller.text,
                                     email: _emailtextcontroller.text,
@@ -113,6 +114,11 @@ class _MyRegisterState extends State<MyRegister> {
                                   if (user != null) {
                                     Navigator.of(context)
                                         .pushNamed('home');
+                                        UserSharedPreferences.setPassword(_passwordtextcontroller.text);
+                                        UserSharedPreferences.setUserName(_nametextcontroller.text);
+                                        UserSharedPreferences.setEmail(_emailtextcontroller.text);
+                                        UserSharedPreferences.setBalance1(200000);
+                                        UserSharedPreferences.setBalance2(20000);
                                   }
                                   },
                             icon: const Icon(Icons.arrow_forward),

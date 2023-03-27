@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
+//import 'package:page_transition/page_transition.dart';
 import 'package:trading_app/Presentation/portfolio.dart';
 import 'package:trading_app/home.dart';
 import 'search.dart';
 import 'graph.dart';
-import 'package:trading_app/main.dart';
+import 'package:trading_app/Services/localstorage.dart';
+
+//import 'package:trading_app/main.dart';
 
 class NavDrawer extends StatelessWidget {
   @override
@@ -14,8 +16,8 @@ class NavDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          const UserAccountsDrawerHeader(
-              accountName: Text("accountName"), accountEmail: Text("accountEmail")),
+          UserAccountsDrawerHeader(
+              accountName: Text(UserSharedPreferences.getUserName()), accountEmail: Text(UserSharedPreferences.getEmail())),
           ListTile(
             //tileColor: Colors.black.withOpacity(0.5),
             //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5),

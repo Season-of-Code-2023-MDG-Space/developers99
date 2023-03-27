@@ -1,7 +1,8 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:trading_app/Services/localstorage.dart';
+import 'package:trading_app/dataset.dart';
 
 Stream<List<User>> readUserStocks() => FirebaseFirestore.instance
       .collection('UserName') //gets all collection
@@ -35,31 +36,6 @@ required num netamt, required num sellprice, required String transactype}) async
   await docUser.set(json);
 }
 
-Future setbalance({required num amt, required String type, required String cardname}) async{
-  try {
-        await FirebaseFirestore.instance.collection('Bank Balance')
-        .doc(cardname).get().then((doc) async{
-            if(type == 'buy')
-            {
-              final json = {
-                'mone' : doc.get('mone') - amt};
-              await FirebaseFirestore.instance.collection('Bank Balance')
-              .doc(cardname).set(json);
-              }
-            else
-            {
-              final json = {
-                'mone' : doc.get('mone') + amt};
-              await FirebaseFirestore.instance.collection('Bank Balance')
-              .doc(cardname).set(json);
-              }
-            }); 
-            }
-  catch(e){
-    //error
-  }
-}
-
 Future createstock({required String collectionname, required String stockname, 
 required String type, required num buyprice, required num noofshares, required String symbol}) async{
   try {
@@ -71,23 +47,38 @@ required String type, required num buyprice, required num noofshares, required S
                 'date': Timestamp.now(),
                 'name': stockname,
                 'symbol': symbol ,
-                'noofshares': noofshares + doc.get('stockvol'),
+                'noofshares': noofshares + doc.get('noofshares'),
                 'buyprice': buyprice + doc.get('buyprice'),
               };
-              await FirebaseFirestore.instance.collection(collectionname)
-                .doc(stockname).set(json);
+              UserSharedPreferences.setBalance1(UserSharedPreferences.getBalance1() - buyprice);
+              if(noofshares + doc.get('noofshares') <= 0)
+              {
+                await FirebaseFirestore.instance.collection(collectionname)
+                .doc(stockname).delete();
+              }
+              else
+              {await FirebaseFirestore.instance.collection(collectionname)
+                .doc(stockname).set(json);}
             }
             else{
               final json = {
                 'date': Timestamp.now(),
                 'name': stockname,
                 'symbol': symbol ,
-                'noofshares': noofshares - doc.get('stockvol'),
+                'noofshares': noofshares - doc.get('noofshares'),
                 'buyprice': buyprice - doc.get('buyprice'),
               };
-              await FirebaseFirestore.instance.collection(collectionname)
-                .doc(stockname).set(json);
-            }
+              UserSharedPreferences.setBalance1(UserSharedPreferences.getBalance2() - buyprice);
+              if(noofshares + doc.get('noofshares') <= 0)
+              {
+                await FirebaseFirestore.instance.collection(collectionname)
+                .doc(stockname).delete();
+              }
+              else
+              {await FirebaseFirestore.instance.collection(collectionname)
+                .doc(stockname).set(json);}
+              }
+
         });
     } catch (e) {
         // If any error

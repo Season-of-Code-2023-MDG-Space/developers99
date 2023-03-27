@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:trading_app/Services/firebaseauth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:trading_app/Services/localstorage.dart';
 
 class MyLogin extends StatefulWidget {
   const MyLogin({Key? key}) : super(key: key);
@@ -11,6 +12,11 @@ class MyLogin extends StatefulWidget {
 class _MyLoginState extends State<MyLogin> {
   final _emailTextController = TextEditingController();
   final _passwordTextController = TextEditingController();
+  initState(){
+    super.initState();
+    _emailTextController.text = UserSharedPreferences.getEmail() != null ? UserSharedPreferences.getEmail() : '';
+    _passwordTextController.text = UserSharedPreferences.getPassword() != null ? UserSharedPreferences.getPassword() : '';
+  }
   @override
   Widget build(BuildContext context) {
     return Container(

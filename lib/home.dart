@@ -5,7 +5,7 @@ import 'package:trading_app/Services/firebase.dart';
 import 'package:trading_app/cardDesign.dart';
 import 'package:trading_app/dataset.dart';
 import 'Presentation/sidemenu.dart';
-import 'package:trading_app/Services/firebase.dart';
+//import 'package:trading_app/Services/firebase.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -148,7 +148,7 @@ class _HomePageState extends State<HomePage> {
                           const SizedBox(
                             height: 20,
                             ),//Currency Market Container
-                    Text("Your Trades",
+                    const Text("Your Trades",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -198,12 +198,6 @@ class _HomePageState extends State<HomePage> {
           ],
         )
     ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed:() {
-            createUser(name: "ChaggiKing", noofshares: 122);
-          },
-        ),
     );
   }
   Widget buildUser(TransHis res) => Card(
@@ -242,7 +236,7 @@ class _HomePageState extends State<HomePage> {
           children:[
             Text('Price/Stock: ${res.sellprice}',
               style:const TextStyle(color: Colors.black54),),
-            Spacer(),
+            const Spacer(),
             Text('Date: ${res.date!.toDate()}'.substring(0,16),
               style:const TextStyle(color: Colors.black54),)
           ]),
@@ -253,7 +247,7 @@ class _HomePageState extends State<HomePage> {
             Row(
               children: [
                 Text("SharesAmt. ${res.noofshares} ",style: const TextStyle(color: Colors.black54)),
-                Spacer(),
+                const Spacer(),
                 Text("NetAmt. ${res.netamount}",style: const TextStyle(color: Colors.black54)),
               ],
             )

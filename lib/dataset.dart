@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+num balance1 = 200000;
+num balance2 = 20000;
+
 class CardData{
   final String balance;
   final String date;
@@ -12,14 +15,14 @@ class CardData{
 
 List<CardData> cards = [
   CardData(
-      balance: '23,532',
+      balance: balance1.toString(),
       date: '12/26',
       number:'5262',
       color: Colors.blue,
       image: "assets/mastercard.png"
   ),
   CardData(
-      balance: '48,632',
+      balance: balance2.toString(),
       date: '01/23',
       number:'5737',
       color: Colors.red,
