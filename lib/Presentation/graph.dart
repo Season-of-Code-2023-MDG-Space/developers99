@@ -7,6 +7,7 @@ import 'sidemenu.dart';
 import 'search1.dart';
 import 'package:trading_app/Services/localstorage.dart';
 
+
 class graphapp extends StatelessWidget {
   const graphapp({super.key});
 
@@ -29,20 +30,22 @@ class BottomSelectionWidget extends StatefulWidget {
 }
 
 class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
+
   String _StockName = UserSharedPreferences.getStockName() != null ? UserSharedPreferences.getStockName(): "AAPL";
   String _StockLongName = UserSharedPreferences.getStockNameLong() != null ? UserSharedPreferences.getStockNameLong() : "APPLE INC.";
   CurrentStat CurrentPriceStatus = CurrentStat();
 
   late ZoomPanBehavior _zoomPanBehavior;
   //List<Stonks>? StockIntra;
+
   Color passivebgbuttoncolour = const Color(0xff000033);
   Color activebgbuttoncolor = Color(0xff000063);
   Color activetxtcolor = Colors.white;
   Color passivetxtcolor = Colors.white60;
+
   String _interval = "1m";
 
   //late int length;
-
   @override
   void initState(){
     //_zoomModeType = ZoomMode.x;
@@ -200,7 +203,6 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
               ]),
             ]));
   }
-
   Future <SfCartesianChart> getGraph({required String symb, required String interval, required ZoomPanBehavior zpan})async
   {
     CurrentPriceStatus = await Currentstatus(name:symb);
@@ -281,5 +283,3 @@ List<ChartData> getChartData({required int length, required List<Stonks>StockDat
       )
   ];
 }
-
-

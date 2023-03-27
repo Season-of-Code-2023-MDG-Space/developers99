@@ -48,6 +48,7 @@ class _PortfolioPage extends State<PortfolioPageScreen> {
           backgroundColor: Colors.blue.shade900,
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30))),
+
           centerTitle: true,
           title: const Text("PORTFOLIO", style:TextStyle(fontFamily: 'ConcertOne',fontSize: 25)),
         ),
@@ -94,6 +95,7 @@ class _PortfolioPage extends State<PortfolioPageScreen> {
         child:
         Container(
                 decoration:const BoxDecoration(color: Color.fromRGBO(6, 27, 59, 1),
+
                     boxShadow:[BoxShadow(
                       color: Color.fromRGBO(0, 0, 0, 0.35),
                       blurRadius: 6.0,
