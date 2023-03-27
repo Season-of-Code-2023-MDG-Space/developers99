@@ -20,8 +20,7 @@ class graphapp extends StatelessWidget {
 }
 String StockName = "AAPL";
 String StockLongName = "APPLE INC.";
-
-late ZoomPanBehavior _zoomPanBehavior;
+CurrentStat CurrentPriceStatus = CurrentStat();
 
 class BottomSelectionWidget extends StatefulWidget {
   const BottomSelectionWidget({super.key});
@@ -31,16 +30,16 @@ class BottomSelectionWidget extends StatefulWidget {
 }
 
 class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
-
-  List<Stonks>? StockIntra;
-
+  late ZoomPanBehavior _zoomPanBehavior;
+  //List<Stonks>? StockIntra;
   Color passivebgbuttoncolour = const Color(0xff000033);
   Color activebgbuttoncolor = Color(0xff000063);
   Color activetxtcolor = Colors.white;
   Color passivetxtcolor = Colors.white60;
   String _interval = "1m";
+
   //late int length;
-  CurrentStat CurrentPriceStatus = new CurrentStat();
+
   @override
   void initState(){
     //_zoomModeType = ZoomMode.x;
@@ -51,52 +50,8 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
         // Enables the selection zooming
         enableSelectionZooming: true
     );
-    // setState(() {
-    //   Future.delayed(Duration.zero,() async {
-    //     //StockIntra = await FetchSeries(name:_StockName);
-    //   CurrentPriceStatus = await Currentstatus(name: _StockName);
-    //   });
-    //
-    //    //length = StockIntra!.length;
-    //    //_chartData = getChartData(length: length, StockData: StockIntra!);
-    //   //timer = Timer.periodic(Duration(seconds:2), (Timer t) => ChangeVar(interv: _interval));
-    //  });
-    // super.initState();
   }
-  // void ChangeVar({required String interv})async
-  // {
-  //   setState((){
-  //     Future.delayed(Duration(milliseconds: 200),() async {
-  //       //StockIntra = await FetchSeries(name:_StockName , interval: interv);
-  //       CurrentPriceStatus = await Currentstatus(name: _StockName);
-  //     });
-  //     _interval = interv;
-  //     //length = StockIntra!.length;
-  //     //_chartData = getChartData(length: length,  StockData: StockIntra!);
-  //   });
-  // }
 
-  // @override
-  // void ChangeVar1({required String symb})async
-  // {
-  //   StockIntra = await FetchSeriesDaily(searchterm: symb);
-  //   setState((){
-  //     length = StockIntra!.length;
-  //     getChartData1();
-  //     _chartData = getChartData1();
-  //   });
-  // }
-  //
-  // @override
-  // void ChangeVar2({required String symb})async
-  // {
-  //   StockIntra = await FetchSeriesWeekly(searchterm: symb);
-  //   setState((){
-  //     length = StockIntra!.length;
-  //     getChartData1();
-  //     _chartData = getChartData1();
-  //   });
-  // }
   List<String> list = <String>['1m', '30m', '60m', '1D', '1wk', '1mo'];
   //int i = 0;
   @override
@@ -161,9 +116,12 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
               ),
               Row(
                   children: [
-                  Padding(padding: EdgeInsets.only(left: 10),
-                    child:
-                    DropdownButton<String>(
+                    // ignore: prefer_const_constructors
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10, top: 2),
+                      child: Text("DATA RANGE: ", style: TextStyle(color: Colors.white30),),
+                    ),
+                  DropdownButton<String>(
                     value: _interval,
                     icon: const Icon(Icons.arrow_downward),
                     elevation: 16,
@@ -184,136 +142,6 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                     child: Text(value),
                     );
                     }).toList(),
-                    ),
-                        // Container(
-                        //     height: 30,
-                        //     width: 40,
-                        //     decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.white54))),
-                        //     margin:EdgeInsets.all(1),
-                        //     child: FloatingActionButton(backgroundColor: bgbuttoncolor("1m"),
-                        //         shape: RoundedRectangleBorder(),
-                        //         onPressed: (){
-                        //           //ChangeVar(interv: "1m");
-                        //           //setState(() {
-                        //             _interval = "1m";
-                        //           //});
-                        //         },
-                        //         child: Text("1min", style: TextStyle(color: txtbuttoncolor("1m")),
-                        //         )
-                        //     )),
-                      //   Container(
-                      //       height: 30,
-                      //       width: 40,
-                      //       margin:EdgeInsets.all(1),
-                      //       decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.white54))),
-                      //       child: FloatingActionButton(backgroundColor: bgbuttoncolor("5m"),
-                      //         shape: RoundedRectangleBorder(),
-                      //         onPressed: (){
-                      //           // ChangeVar(interv: "5m");
-                      //           // setState(()
-                      //           // {
-                      //               _interval = "5m";
-                      //            // });
-                      // },
-                      //         child: Text("5min", style: TextStyle(color: txtbuttoncolor("5m")),),
-                      //       )
-                      //   ),
-                      //   Container(
-                      //       height: 30,
-                      //       width: 50,
-                      //       margin:EdgeInsets.all(1),
-                      //       decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.white54))),
-                      //       child: FloatingActionButton(backgroundColor: bgbuttoncolor("15m"),
-                      //         shape: RoundedRectangleBorder(),
-                      //         onPressed: (){
-                      //           // ChangeVar(interv: "15m");
-                      //           // setState(()
-                      //           // {
-                      //             _interval = "15m";
-                      //           // });
-                      //         },
-                      //         child: Text("15min", style: TextStyle(color: txtbuttoncolor("15m")),),
-                      //       )
-                      //   ),Container(
-                      //       height: 30,
-                      //       width: 50,
-                      //       margin:EdgeInsets.all(1),
-                      //       decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.white54))),
-                      //       child: FloatingActionButton(backgroundColor: bgbuttoncolor("30m"),
-                      //         shape: RoundedRectangleBorder(),
-                      //         onPressed: (){
-                      //           // ChangeVar(interv: "30m");
-                      //           // setState(()
-                      //           // {
-                      //             _interval = "30m";
-                      //           // });
-                      //         },
-                      //         child: Text("30min", style: TextStyle(color: txtbuttoncolor("30m")),),
-                      //       )
-                      //   ),Container(
-                      //       height: 30,
-                      //       width: 50,
-                      //       margin:EdgeInsets.all(1),
-                      //       decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.white54))),
-                      //       child: FloatingActionButton(backgroundColor: bgbuttoncolor("60m"),
-                      //         shape: RoundedRectangleBorder(),
-                      //         onPressed: (){
-                      //           // ChangeVar(interv: "60m");
-                      //           // setState(()
-                      //           // {
-                      //             _interval = "60m";
-                      //           // });
-                      //         },
-                      //         child: Text("60min", style: TextStyle(color: txtbuttoncolor("60m")),),
-                      //       )
-                      //   ),
-                      //   Container(
-                      //       height: 30,
-                      //       width: 50,
-                      //       margin:EdgeInsets.all(1),
-                      //       decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.white54))),
-                      //       child: FloatingActionButton(backgroundColor: bgbuttoncolor("1d"),
-                      //         shape: RoundedRectangleBorder(),
-                      //         onPressed: (){
-                      //           // ChangeVar(interv: "1d");
-                      //             _interval = "1d";
-                      //         },
-                      //         child: Text("1 Day", style: TextStyle(color: txtbuttoncolor("1d")),),
-                      //       )
-                      //   ),
-                      //   Container(
-                      //       height: 30,
-                      //       width: 50,
-                      //       margin:EdgeInsets.all(1),
-                      //       decoration: BoxDecoration(border: Border(right: BorderSide(color: Colors.white54))),
-                      //       child: FloatingActionButton(backgroundColor: bgbuttoncolor("1wk"),
-                      //         shape: RoundedRectangleBorder(),
-                      //         onPressed: (){
-                      //           // ChangeVar(interv: "1wk");
-                      //           // setState(()
-                      //           // {
-                      //             _interval = "1wk";
-                      //           // });
-                      //         },
-                      //         child: Text("1week", style: TextStyle(color: txtbuttoncolor("1wk")),),
-                      //       )
-                      //   ),
-                      //   Container(
-                      //       height: 30,
-                      //       width: 60,
-                      //       margin:EdgeInsets.all(1),
-                      //       child: FloatingActionButton(backgroundColor: bgbuttoncolor("1mo"),
-                      //         shape: RoundedRectangleBorder(),
-                      //         onPressed: (){
-                      //           // ChangeVar(interv: "1mo");
-                      //           // setState(()
-                      //           // {
-                      //             _interval = "1mo";
-                      //           // });
-                      //         },
-                      //         child: Text("1month", style: TextStyle(color: txtbuttoncolor("1mo")),),
-                      //       )
-                      //   ),
                   ),
                 ]),
               Container(
@@ -321,7 +149,7 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                 height: 400,
                 child:StreamBuilder<SfCartesianChart>(
                   stream: Stream.periodic(const Duration(seconds: 2)).asyncMap((_) async {
-                            return getGraph(symb: StockName);}),
+                            return getGraph(symb: StockName, interval: _interval, zpan: _zoomPanBehavior);}),
                   builder: (context, AsyncSnapshot<SfCartesianChart> snapshot){
                   if(snapshot.hasError){
                     return Center(
@@ -369,45 +197,34 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
               ]),
             ]));
   }
-  Future <SfCartesianChart> getGraph({required String symb})async
+
+  Future <SfCartesianChart> getGraph({required String symb, required String interval, required ZoomPanBehavior zpan})async
   {
     CurrentPriceStatus = await Currentstatus(name:symb);
-    List<Stonks>Stonkdata = await FetchSeries(name:symb, interval: _interval);
+    List<Stonks>Stonkdata = await FetchSeries(name:symb, interval: interval, numberofresp: 0);
     return(
         SfCartesianChart(plotAreaBorderWidth: 0,
             series: <CandleSeries>[
-          CandleSeries<ChartData, DateTime>(
-              bearColor: Colors.red.shade800,
-              bullColor: Colors.green.shade800,
-              dataSource: getChartData(length: Stonkdata.length, StockData: Stonkdata),
-              xValueMapper: (ChartData sales, _) => sales.x,
-              lowValueMapper: (ChartData sales, _) => sales.low,
-              highValueMapper: (ChartData sales, _) => sales.high,
-              openValueMapper: (ChartData sales, _) => sales.open,
-              closeValueMapper: (ChartData sales, _) => sales.close)
-        ], primaryXAxis: DateTimeAxis(labelStyle: TextStyle(color: Colors.white),
-          majorGridLines: const MajorGridLines(width: 0),
+              CandleSeries<ChartData, DateTime>(
+                  bearColor: Color(0xFFFF0000),
+                  bullColor: Colors.green,
+                  dataSource: getChartData(length: Stonkdata.length, StockData: Stonkdata),
+                  xValueMapper: (ChartData sales, _) => sales.x,
+                  lowValueMapper: (ChartData sales, _) => sales.low,
+                  highValueMapper: (ChartData sales, _) => sales.high,
+                  openValueMapper: (ChartData sales, _) => sales.open,
+                  closeValueMapper: (ChartData sales, _) => sales.close)
+            ], primaryXAxis: DateTimeAxis(labelStyle: TextStyle(color: Colors.white),
+              majorGridLines: const MajorGridLines(width: 0)
             ),
             primaryYAxis: NumericAxis(axisLine: AxisLine(width: 0),
-                labelStyle: const TextStyle(fontSize: 0),
-                majorGridLines: const MajorGridLines(color: Colors.white10,),
+              labelStyle: const TextStyle(fontSize: 0),
+              majorGridLines: const MajorGridLines(color: Colors.white10,),
             ),
-            zoomPanBehavior: _zoomPanBehavior,
-            tooltipBehavior: TooltipBehavior(enable: true)
+            zoomPanBehavior: zpan,
+            tooltipBehavior: TooltipBehavior(enable: true, duration: 5)
         )
     );
-  }
-  List<ChartData> getChartData({required int length, required List<Stonks>StockData}) {
-    return <ChartData>[
-      for (int i = 0; i < length; i++)
-        ChartData(
-          x: StockData[i].Date_Time,
-          open: StockData[i].open,
-          close: StockData[i].close,
-          low: StockData[i].low,
-          high: StockData[i].high,
-        )
-    ];
   }
 
   Color bgbuttoncolor(String inter)
@@ -448,3 +265,18 @@ class ChartData{
   final num? low;
   final num? high;
 }
+
+List<ChartData> getChartData({required int length, required List<Stonks>StockData}) {
+  return <ChartData>[
+    for (int i = 0; i < length; i++)
+      ChartData(
+        x: StockData[i].Date_Time,
+        open: StockData[i].open,
+        close: StockData[i].close,
+        low: StockData[i].low,
+        high: StockData[i].high,
+      )
+  ];
+}
+
+

@@ -5,6 +5,7 @@ import '/Services/ApiService.dart';
 //import '/Presentation/graph.dart';
 import 'graph.dart';
 //Timer? timer;
+import 'buysell.dart';
 
 class SearchScreen extends StatefulWidget{
   const SearchScreen({super.key});
@@ -76,7 +77,7 @@ class _SearchBarScreen extends State<SearchScreen> {
     subtitle: Text(res.Symbol!,style:const TextStyle(color: Colors.white70),),
     title: Text(res.Name!, style: const TextStyle(color: Colors.white),),
     onTap: (){Navigator.of(context).pop();
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const graphapp()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => BuySellScreen(Stockname: res.Name!, Symbolname: res.Symbol!,)));
       StockName = res.Symbol!;
       StockLongName = res.Name!;},
     shape: const RoundedRectangleBorder(
