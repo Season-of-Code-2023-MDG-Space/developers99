@@ -127,7 +127,7 @@ class _PortfolioPage extends State<PortfolioPageScreen> {
                         fontSize: 20, fontFamily: "MonomaniacOne",color: Color.fromRGBO(67, 93, 126, 1), height: 0.6),),]),
                     Padding(padding: const EdgeInsets.only(top: 0),
                     child:Column(children:[
-                Text('INVESTED.${user.stockvol * user.buyprice}',style: const TextStyle(fontFamily: "Homenaje",fontSize: 20,color: Color.fromRGBO(123, 147, 176, 1)),)]))]),
+                Text('INVESTED.''${user.stockvol * user.buyprice}'.substring(0, '${user.stockvol * user.buyprice}'.length > 6 ? 14 : '${user.stockvol * user.buyprice}'.length + 8),style: const TextStyle(fontFamily: "Homenaje",fontSize: 20,color: Color.fromRGBO(123, 147, 176, 1)),)]))]),
   //                 SizedBox(height: 200,
   //                     width: 200,
   //                     child:FutureBuilder<SfCartesianChart>(
