@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:trading_app/Services/firebaseauth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 class MyLogin extends StatefulWidget {
   const MyLogin({Key? key}) : super(key: key);
-
   @override
   State<MyLogin> createState() => _MyLoginState();
 }
 
 class _MyLoginState extends State<MyLogin> {
+  final _emailTextController = TextEditingController();
+  final _passwordTextController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -21,7 +23,7 @@ class _MyLoginState extends State<MyLogin> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: FutureBuilder(
-          future: _initializeFirebase(),
+          future: initializeFirebase(),
           builder: (context,snapshot) {
             if(snapshot.connectionState == ConnectionState.done)
             {return Stack(
@@ -46,6 +48,7 @@ class _MyLoginState extends State<MyLogin> {
                     child: Column(
                       children: [
                         TextField(
+                          controller: _emailTextController,
                           decoration: InputDecoration(
                             fillColor: Colors.grey.shade100,
                             filled: true,
@@ -60,6 +63,7 @@ class _MyLoginState extends State<MyLogin> {
                         ),
                         TextField(
                           obscureText: true,
+                          controller: _passwordTextController,
                           decoration: InputDecoration(
                               fillColor: Colors.grey.shade100,
                               filled: true,
@@ -87,9 +91,17 @@ class _MyLoginState extends State<MyLogin> {
                               radius: 30.0,
                               backgroundColor: Colors.white70,
                               child: IconButton(
-                                onPressed: () {
-                                  Navigator.pushNamed(context,'home');
-                                },
+                                onPressed: () async{
+                                  User? user = await FireAuth.signInUsingEmailPassword(
+                                    email: _emailTextController.text,
+                                    password: _passwordTextController.text,
+                                    context: context
+                                  );
+                                  if (user != null) {
+                                    Navigator.of(context)
+                                        .pushNamed('home');
+                                  }
+                                  },
                                 icon: const Icon(Icons.arrow_forward),
                               ),
                             ),
@@ -134,7 +146,7 @@ class _MyLoginState extends State<MyLogin> {
               ],
             );}
             else{
-              return Center(
+              return const Center(
             child: CircularProgressIndicator(),
           );
             }
