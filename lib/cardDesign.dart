@@ -57,7 +57,7 @@ class CardDesign extends StatelessWidget {
               const SizedBox(
                 height: 5,
               ),
-              Text('\$${card.balance}', style: const TextStyle(
+              Text('\₹${card.balance}', style: const TextStyle(
                 color: Colors.white,
                 fontSize: 30,
                 fontWeight: FontWeight.bold,

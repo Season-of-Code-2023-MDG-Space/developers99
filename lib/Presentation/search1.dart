@@ -1,4 +1,6 @@
 //import 'package:flutter/cupertino.dart';
+//import 'dart:js';
+
 import 'package:flutter/material.dart';
 import '/Services/ApiService.dart';
 //import 'dart:async';
@@ -6,20 +8,21 @@ import '/Services/ApiService.dart';
 import 'graph.dart';
 //Timer? timer;
 import 'buysell.dart';
+import 'package:trading_app/Services/localstorage.dart';
 
-class SearchScreen extends StatefulWidget{
-  const SearchScreen({super.key});
+class SearchScreen1 extends StatefulWidget{
+  const SearchScreen1({super.key});
   @override
-  State<SearchScreen> createState() => _SearchBarScreen();
+  State<SearchScreen1> createState() => _SearchBarScreen();
 }
 
-class _SearchBarScreen extends State<SearchScreen> {
+class _SearchBarScreen extends State<SearchScreen1> {
   _SearchBarScreen();
   List<Result> lisres = [];
   int length = 0;
 
   final TextEditingController mycontroller = TextEditingController();
-  String searchString = "AAPL";
+  String searchString = (UserSharedPreferences.getStockName() != null ? UserSharedPreferences.getStockName() : "AAPL");
 
   @override
   Widget build(BuildContext context) {
@@ -76,8 +79,11 @@ class _SearchBarScreen extends State<SearchScreen> {
     leading: CircleAvatar(child: Text(res.Symbol![0])),
     subtitle: Text(res.Symbol!,style:const TextStyle(color: Colors.white70),),
     title: Text(res.Name!, style: const TextStyle(color: Colors.white),),
-    onTap: (){Navigator.of(context).pop();
-    Navigator.push(context, MaterialPageRoute(builder: (context) => BuySellScreen(Stockname: res.Name!, Symbolname: res.Symbol!,)));},
+    onTap: (){
+      UserSharedPreferences.setStockName(res.Symbol!);
+      UserSharedPreferences.setStockNameLong(res.Name!);
+      Navigator.of(context as BuildContext).pop();
+      Navigator.push(context as BuildContext, MaterialPageRoute(builder: (context) => graphapp()));},
     shape: const RoundedRectangleBorder(
       side: BorderSide(color: Colors.white70, width: 1,),
     ),

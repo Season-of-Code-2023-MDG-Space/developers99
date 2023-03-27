@@ -43,11 +43,12 @@ class _PortfolioPage extends State<PortfolioPageScreen> {
   Widget build(BuildContext context)
   {
     return Scaffold(
-        backgroundColor: Color.fromRGBO(42, 59, 84, 1),
+        backgroundColor: Colors.white,
         appBar: AppBar(elevation: 10,shadowColor: Colors.black,
-          backgroundColor: Color.fromRGBO(32, 45, 62, 1),
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(
-              Radius.circular(30))),
+          backgroundColor: Colors.blue.shade900,
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30))),
+
           centerTitle: true,
           title: const Text("PORTFOLIO", style:TextStyle(fontFamily: 'ConcertOne',fontSize: 25)),
         ),
@@ -93,7 +94,8 @@ class _PortfolioPage extends State<PortfolioPageScreen> {
         Padding(padding: const EdgeInsets.only(top: 25),
         child:
         Container(
-                decoration:const BoxDecoration(color: Color.fromRGBO(42, 59, 84, 1),
+                decoration:const BoxDecoration(color: Color.fromRGBO(6, 27, 59, 1),
+
                     boxShadow:[BoxShadow(
                       color: Color.fromRGBO(0, 0, 0, 0.35),
                       blurRadius: 6.0,
@@ -111,21 +113,21 @@ class _PortfolioPage extends State<PortfolioPageScreen> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 //leading: CircleAvatar(radius: 30,child: Text(user.stockvol.toString()),),
                 title: Row(
-                children:[Container(child:Column(crossAxisAlignment: CrossAxisAlignment.center,
+                children:[Column(crossAxisAlignment: CrossAxisAlignment.center,
                       children:[
                           Text('${user.stockvol}QTY.  AVG.150',
-                            style: const TextStyle(fontSize: 20,fontFamily: "LondrinaSolid", height: 0.4, color: Color.fromRGBO(102, 115, 132, 1),
+                            style: const TextStyle(fontSize: 20,fontFamily: "Homenaje", height: 0.4, color: Color.fromRGBO(102, 115, 132, 1),
                             ),),
                         Column(//crossAxisAlignment: CrossAxisAlignment.start,
                     children:[
                       Text(user.name.toUpperCase(),style: const TextStyle(
-                        fontSize: 25, fontFamily: "RubikMono",color: Colors.white, height: 1.4)),
+                        fontSize: 30, fontFamily: "MonomaniacOne",color: Colors.white, height: 1.3)),
                       Column(crossAxisAlignment: CrossAxisAlignment.center,
                         children:[Text("(${user.symbol})",style: const TextStyle(
-                        fontSize: 20, fontFamily: "LondrinaSolid",color: Color.fromRGBO(67, 93, 126, 1), height: 0.6),),]),
-                    Padding(padding: const EdgeInsets.only(top: 5),
+                        fontSize: 20, fontFamily: "MonomaniacOne",color: Color.fromRGBO(67, 93, 126, 1), height: 0.6),),]),
+                    Padding(padding: const EdgeInsets.only(top: 0),
                     child:Column(children:[
-                Text('INVESTED.${user.stockvol * user.buyprice}',style: TextStyle(fontFamily: "LondrinaSolid",fontSize: 20,color: Color.fromRGBO(123, 147, 176, 1)),)]))]),
+                Text('INVESTED.${user.stockvol * user.buyprice}',style: const TextStyle(fontFamily: "Homenaje",fontSize: 20,color: Color.fromRGBO(123, 147, 176, 1)),)]))]),
   //                 SizedBox(height: 200,
   //                     width: 200,
   //                     child:FutureBuilder<SfCartesianChart>(
@@ -151,12 +153,11 @@ class _PortfolioPage extends State<PortfolioPageScreen> {
   //                       },
   //                     )
   // )
-                      ])),new Spacer(),
-                  Container(
-                  child: Column(
+                      ]),const Spacer(),
+                  Column(
                     children: [
-                  Text("CURRENT PRICE:",style: const TextStyle(
-                      fontSize: 20, fontFamily: "LondrinaSolid",color: Color.fromRGBO(67, 93, 126, 1), height: 0.4),),
+                  const Text("CURRENT PRICE:",style: TextStyle(
+                      fontSize: 20, fontFamily: "Homenaje",color: Color.fromRGBO(67, 93, 126, 1), height: 0.4),),
                     StreamBuilder<CurrentStat>(
                       stream: Stream.periodic(const Duration(seconds: 2)).asyncMap((_) async {
                         return Currentstatus(name: user.symbol);
@@ -171,17 +172,18 @@ class _PortfolioPage extends State<PortfolioPageScreen> {
                         }
                         else if(snapshot.hasData)
                         {
-                          CurrentStat _temp = snapshot.data!;
+                          CurrentStat temp = snapshot.data!;
                           return(Column(children: [
-                            Column(children: [Container(
-                                child:Text("${_temp.ChangeAmt}",
-                                  style: TextStyle(fontSize: 32, color: (_temp.ChangeAmt! > 0)? Colors.green : Colors.red),)),
-                              Text("  (${_temp.ChangePer}%)",
-                                style: TextStyle(fontSize: 17,color: (_temp.ChangePer! > 0)? Colors.green : Colors.red, height: 0.6),
+                            Column(children: [Text("${temp.ChangeAmt}",
+                              style: TextStyle(fontSize: 32, color: (temp.ChangeAmt! > 0)? Color(0xFF00FF38) : Color(0xFFFF0000)),),
+                              Text("  (${temp.ChangePer}%)",
+                                style: TextStyle(fontSize: 17,color: (temp.ChangePer! > 0)? Colors.green : Colors.red, height: 0.6),
                                 ),
                             ]),
-                            Row(children:[Text("LTP. ", style: TextStyle(color: Color.fromRGBO(123, 147, 176, 1),height: 1.45, fontSize: 20),),
-                            Text("${_temp.RegMarketPrice}", style: TextStyle(color: Colors.white, fontSize: 20, height: 1.45))]
+                            Row(children:[const Text("LTP. ", style: TextStyle(color: Color.fromRGBO(123, 147, 176, 1),
+                                height: 1.45, fontSize: 20, fontFamily: "Homenaje"),),
+                            Text("${temp.RegMarketPrice}", style:
+                            const TextStyle(color: Colors.white, fontSize: 20, height: 1.45, fontFamily: "Homenaje"))]
                             ),
                           ]));
                         }
@@ -191,7 +193,7 @@ class _PortfolioPage extends State<PortfolioPageScreen> {
                         }
                       },
                     )
-                ],),)
+                ],)
                 ])
                     ))));
   // Future <SfCartesianChart> getGraph({required String symb})async

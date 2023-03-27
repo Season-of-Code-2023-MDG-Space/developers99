@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:math';
@@ -16,8 +16,13 @@ Future<List<Stonks>> FetchSeries({String interval = "1m", required String name,i
     final mapResponse = json.decode(response.body);
     List <Stonks> Stocks = [];
     List <dynamic> _temp = mapResponse["chart"]["result"][0]["timestamp"];
+    if (numberofresp == 0)
+    {
+      numberofresp = _temp.length;
+    }
+    int length = _temp.length - numberofresp;
       //for(int i = _temp.length - 1; i >= numberofresp; i--)
-        for(int i = numberofresp; i < _temp.length; i++)
+        for(int i = length; i < _temp.length; i++)
         {
           Stocks.add(Stonks(Date_Time:DateTime.fromMillisecondsSinceEpoch(_temp[i] * 1000),
               open: mapResponse["chart"]["result"][0]["indicators"]["quote"][0]["open"][i],

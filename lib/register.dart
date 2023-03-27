@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:trading_app/Services/firebaseauth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'Services/localstorage.dart';
 
 class MyRegister extends StatefulWidget {
   const MyRegister({Key? key}) : super(key: key);
@@ -8,6 +11,9 @@ class MyRegister extends StatefulWidget {
 }
 
 class _MyRegisterState extends State<MyRegister> {
+  final _nametextcontroller= TextEditingController();
+  final _emailtextcontroller = TextEditingController();
+  final _passwordtextcontroller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -48,6 +54,7 @@ class _MyRegisterState extends State<MyRegister> {
                 child: Column(
                   children: [
                     TextField(
+                      controller: _nametextcontroller,
                       decoration: InputDecoration(
                           hintText: 'Name',
                           border: OutlineInputBorder(
@@ -59,6 +66,7 @@ class _MyRegisterState extends State<MyRegister> {
                       height: 20.0,
                     ),
                     TextField(
+                      controller: _emailtextcontroller,
                       decoration: InputDecoration(
                           hintText: 'Email',
                           border: OutlineInputBorder(
@@ -70,6 +78,7 @@ class _MyRegisterState extends State<MyRegister> {
                       height: 20.0,
                     ),
                     TextField(
+                      controller: _passwordtextcontroller,
                       obscureText: true,
                       decoration: InputDecoration(
                           hintText: 'Password',
@@ -83,8 +92,8 @@ class _MyRegisterState extends State<MyRegister> {
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text(
+                      children:[
+                        const Text(
                           'Sign Up',
                           style: TextStyle(
                             color: Colors.grey,
@@ -96,8 +105,23 @@ class _MyRegisterState extends State<MyRegister> {
                           radius: 30.0,
                           backgroundColor: Colors.white70,
                           child: IconButton(
-                            onPressed: null,
-                            icon: Icon(Icons.arrow_forward),
+                            onPressed:() async{                              
+                                  User? user = await FireAuth.registerUsingEmailPassword(
+                                    name: _nametextcontroller.text,
+                                    email: _emailtextcontroller.text,
+                                    password: _passwordtextcontroller.text,
+                                  );
+                                  if (user != null) {
+                                    Navigator.of(context)
+                                        .pushNamed('home');
+                                        UserSharedPreferences.setPassword(_passwordtextcontroller.text);
+                                        UserSharedPreferences.setUserName(_nametextcontroller.text);
+                                        UserSharedPreferences.setEmail(_emailtextcontroller.text);
+                                        UserSharedPreferences.setBalance1(200000);
+                                        UserSharedPreferences.setBalance2(20000);
+                                  }
+                                  },
+                            icon: const Icon(Icons.arrow_forward),
                           ),
                         ),
                       ],

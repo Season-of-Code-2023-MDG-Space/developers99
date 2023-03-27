@@ -43,6 +43,8 @@ dependencies:
   page_transition:
   firebase_core: ^2.7.1
   cloud_firestore:
+  firebase_auth: ^4.2.2
+  shared_preferences:
 
 dev_dependencies:
   flutter_test:
@@ -101,6 +103,10 @@ flutter:
     - family: RampartOne
       fonts:
           - asset: assets/fonts/RampartOne-Regular.ttf
+          
+    - family: GermaniaOne
+      fonts:
+          - asset: assets/fonts/GermaniaOne-Regular.ttf
 
     - family: ConcertOne
       fonts:
@@ -113,5 +119,13 @@ flutter:
     - family: RubikMono
       fonts:
         - asset: assets/fonts/RubikMonoOne-Regular.ttf
+
+    - family: Homenaje
+      fonts:
+          - asset: assets/fonts/Homenaje-Regular.ttf
+
+    - family: MonomaniacOne
+      fonts:
+          - asset: assets/fonts/MonomaniacOne-Regular.ttf
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
