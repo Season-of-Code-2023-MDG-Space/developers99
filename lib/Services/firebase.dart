@@ -5,7 +5,7 @@ import 'package:trading_app/Services/localstorage.dart';
 import 'package:trading_app/dataset.dart';
 
 Stream<List<User>> readUserStocks() => FirebaseFirestore.instance
-      .collection('UserName') //gets all collection
+      .collection('Stonks') //gets all collection
       //.orderBy('date', descending: true)
       .snapshots()  //gets all documents
       .map((snapshot) =>  //returns a query snapshot of map string dynamic so that we get some json data.
@@ -129,7 +129,7 @@ class User{
     name: json['name'],
     date: json['date'],
     buyprice: json['buyprice'],
-    stockvol: json['stockvol'],
+    stockvol: json['noofshares'],
     symbol: json['symbol']
   );
 }
