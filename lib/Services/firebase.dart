@@ -22,7 +22,7 @@ Future createtransac({required String name, required num noofshares,
 required num netamt, required num sellprice, required String transactype}) async{
   //WidgetsFlutterBinding.ensureInitialized();
   //await Firebase.initializeApp();
-  final docUser = FirebaseFirestore.instance.collection('Transac. History').doc(name);
+  final docUser = FirebaseFirestore.instance.collection('Transac. History').doc();
 
   final json = {
     'date': Timestamp.now(),
