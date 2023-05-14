@@ -31,8 +31,8 @@ class BottomSelectionWidget extends StatefulWidget {
 
 class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
 
-  String _StockName = UserSharedPreferences.getStockName() != null ? UserSharedPreferences.getStockName(): "AAPL";
-  String _StockLongName = UserSharedPreferences.getStockNameLong() != null ? UserSharedPreferences.getStockNameLong() : "APPLE INC.";
+  final String _StockName = UserSharedPreferences.getStockName() ?? "AAPL";
+  final String _StockLongName = UserSharedPreferences.getStockNameLong() ?? "APPLE INC.";
   CurrentStat CurrentPriceStatus = CurrentStat();
 
   late ZoomPanBehavior _zoomPanBehavior;
@@ -99,8 +99,8 @@ class _BottomSelectionWidgetState extends State<BottomSelectionWidget> {
                   if(snapshot.hasError){
                     return Center(
                         child: Row(mainAxisAlignment: MainAxisAlignment.center,
-                            children:const [
-                              Icon(Icons.error, color: Colors.red,size: 90,),
+                            children:[
+                              const Icon(Icons.error, color: Colors.red,size: 90,),
                             ]));
                   }
                   else if(snapshot.hasData)
