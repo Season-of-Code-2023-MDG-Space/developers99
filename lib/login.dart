@@ -104,6 +104,8 @@ class _MyLoginState extends State<MyLogin> {
                                     context: context
                                   );
                                   if (user != null) {
+                                    UserSharedPreferences.setEmail(_emailTextController.text);
+                                    UserSharedPreferences.setUserName(_emailTextController.text);
                                     Navigator.of(context)
                                         .pushNamed('home');
                                   }
